@@ -1,0 +1,114 @@
+/* #14b8a6 초록 */
+/* #14a6b8 파랑 */
+
+/* nav-default start-point */
+.nav-area {
+	background-color: #14a6b8;
+}
+.nav-default {
+	background-color: #14a6b8;
+	padding: 10px 15px;
+	width: 1024px;
+    margin: 0 auto;
+	position: relative;
+    border: 1px solid #14a6b8;
+    border-width: 1px 0 1px 0;
+}
+.list-area {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+	text-align: left;
+}
+.list-area li {
+    display: inline-block;
+	border-right: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0px 15px;
+}
+.list-area li:last-of-type {
+    border-right: none;
+}
+.list-area li a {
+    padding: 5px 10px;
+    color: #ffffff;
+	font-weight: 500;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.list-area li a:hover {
+    text-decoration: underline;
+	background-color: rgba(255, 255, 255, 0.1);
+}
+.list-area li a.active {
+	font-weight: bold;
+    color: #08444b;
+	text-shadow: 0.7px 0.7px 0.7px rgba(0, 0, 0, 0.2); 
+}
+nav div {
+	width: 280px;
+}
+/* nav-default end-point */
+
+/* nav-user start-point */
+.nav-admin-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 1024px;
+    margin: 10px auto 5px;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 5px;
+}
+.nav-admin-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(20, 166, 184, 0.15);
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-admin-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #14b8a6;
+    margin-right: 10px;
+}
+
+.nav-admin-area,
+.nav-privacy-admin-area {
+    display: flex;
+    align-items: center;
+}
+
+.nav-admin-area {
+    margin-right: 10px;
+}
+
+.nav-admin-area ul, .nav-privacy-admin-area ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-admin ul li, .nav-privacy-admin ul li {
+    font-size: 13px;
+    padding: 5px 10px;
+    background-color: #14b8a6;
+    color: #ecf0f1;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid transparent; 
+}
+
+.nav-admin ul li:hover, .nav-privacy-admin ul li:hover {
+    background-color: #ecf0f1;
+    color: #14b8a6;
+    border: 1px solid #14b8a6;
+}
+
+
+/* nav-user end-point */

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<!--navAdminFragment 선언-->
+<div class="nav-admin-wrapper" th:fragment="navAdminFragment">
+	<div class="nav-admin-container">
+		<div class="nav-admin-title" th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_PRIVACY_ADMIN'')')}"><a href="">관리자 메뉴</a></div>
+		<div class="nav-admin-area" th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_PRIVACY_ADMIN'')')}">
+			<nav class="nav-admin">
+				<ul>
+					<li><a href="/board/articles-list.do?categoryNum=3">게시판 관리</a></li>
+					<li><a href="/category/categories-list.do">카테고리 관리</a></li>
+				</ul>
+			</nav>
+		</div>
+		<div class="nav-privacy-admin-area" th:if="${#authorization.expression('hasRole(''ROLE_PRIVACY_ADMIN'')')}">
+			<nav class="nav-privacy-admin">
+				<ul>
+					<li><a href="/privacy-admin/user-management/main.do">회원 관리</a></li>
+					<li><a href="/privacy-admin/pet-management/admin-pet-list.do">반려친구 관리</a></li>
+					<li><a href="/event/adminlistEvents.do">일정 관리</li>
+				</ul>
+			</nav>  
+		</div>
+	</div>
+</div>
+<!--navFragment 선언-->
+	<div th:fragment="navFragment" class="nav-area">
+    	<nav class="nav-default">
+			<ul class="list-area">
+				<li><a href="/board/articles-list.do?categoryNum=3" th:classappend="${#httpServletRequest.requestURI.startsWith('/board')} ? 'active' : ''">게시판</a></li>
+				<li><a href="https://www.bbc.com/korean/topics/cz74kjypyw7t" th:classappend="${#httpServletRequest.requestURI.startsWith('/news')} ? 'active' : ''">뉴스</a></li>
+			</ul>
+			<div>
+				<!-- 허전해서 뭘 채울지 고민 -->
+			</div>
+		</nav>
+	</div>
+</body>
+</html>

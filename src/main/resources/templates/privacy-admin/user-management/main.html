@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>회원 관리</title>
+</head>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .content {
+            font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+            width: 840px;
+        }
+        h2 {
+            padding: 5px 0;
+            margin: 5px 0;
+        }
+        h3 {
+            padding: 0 0 5px;
+            margin: 0;
+        }
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            table-layout: fixed;
+        }
+        td, th {
+            padding: 6px 15px;
+        }
+        th {
+            color: #fff;
+            text-align: center;
+        }
+        td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-right: 1px solid #c6c9cc;
+            border-bottom: 1px solid #c6c9cc;
+        }
+        td a {
+            font-weight: 700;
+        }
+        td a:hover {
+            text-decoration: underline;
+        }
+        td:first-child {
+            border-left: 1px solid #c6c9cc;
+        }
+        #newUsers-table th {
+            background: #14B8A6;
+        }
+        #withdrawnUsers-table th {
+            background: #B81426;
+        }
+        #suspendedUsers-table th {
+            background: #A614B8;
+        }
+        tr:first-child th:first-child {
+            border-top-left-radius: 6px;
+        }
+        tr:first-child th:last-child {
+            border-top-right-radius: 6px;
+        }
+        #newUsers-table tr:not(.detail-content-row):nth-child(even) td {
+            background: #DFF5F3;
+        }
+        #withdrawnUsers-table tr:not(.detail-content-row):nth-child(even) td {
+            background: #F5DFE1;
+        }
+        #suspendedUsers-table tr:not(.detail-content-row):nth-child(even) td {
+            background: #F3DFF5;
+        }
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 6px;
+        }
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 6px;
+        }
+        #newUsers-table tbody tr:not(.detail-content-row):hover {
+            background-color: #CDF0EC;
+        }
+        #newUsers-table tbody tr:not(.detail-content-row):nth-child(even):hover td {
+            background-color: #CDF0EC;
+        }
+        #withdrawnUsers-table tbody tr:not(.detail-content-row):hover {
+            background-color: #F0CDD1;
+        }
+        #withdrawnUsers-table tbody tr:not(.detail-content-row):nth-child(even):hover td {
+            background-color: #F0CDD1;
+        }
+        #suspendedUsers-table tbody tr:not(.detail-content-row):hover {
+            background-color: #ECCDF0;
+        }
+        #suspendedUsers-table tbody tr:not(.detail-content-row):nth-child(even):hover td {
+            background-color: #ECCDF0;
+        }
+        tbody tr.detail-content-row:hover td {
+            background-color: #fff !important;
+        }
+        .table_btn {
+            font: 12px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            z-index: 2;
+        }
+        .table_btn:hover {
+            filter: brightness(90%) !important;
+        }
+        .withdrawn_delete_btn {
+            background-color: #B81426 !important;
+            width: 84px;
+            height: 24px;
+        }
+        .suspend_btn {
+            background-color: #A614B8 !important;
+            width: 70px;
+            height: 24px;
+        }
+        .table-area {
+            padding: 16px 0 20px;
+            border-top: 1px solid #14a6b8;
+        }
+    </style>
+</th:block>
+<!-- 해당 페이지 고유 JS 추가 -->
+<th:block layout:fragment="script">
+    <script>
+    $(document).ready(function() {
+        // 행 클릭 이벤트 리스너
+        $('body').off('click', 'tbody tr.user-row').on('click', 'tbody tr.user-row', function() {
+        const clickedRow = $(this);
+        let userNum = clickedRow.find('td:first').text().trim();
+        
+        // 상세 내용이 이미 표시되어 있다면 제거
+        if (clickedRow.next().hasClass('detail-content-row')) {
+            clickedRow.next().remove();
+            return;
+        }
+
+        // 다른 행의 상세 내용 제거
+        $('.detail-content-row').remove();
+        
+        // 그렇지 않다면 상세 내용 로드
+        let tableId = clickedRow.closest('table').attr('id');
+        let colspanValue = 7;
+        
+        if ( tableId === "suspendedUsers-table") {
+            colspanValue = 8; 
+        } 
+
+        $('<td colspan="' + colspanValue + '"></td>').load('/privacy-admin/user-management/user-detail.do?user_num=' + userNum, function(response, status, xhr) {
+                if (status == "error") {
+                    console.error("Error loading detail content:", xhr.status + " " + xhr.statusText);
+                    return;
+                }
+                
+                const detailContent = `
+                    <tr class="detail-content-row">
+                        <td colspan="${colspanValue}" class="detail-container">
+                            ${response}
+                        </td>
+                    </tr>
+                `;
+            
+                // 가져온 내용을 현재 클릭된 행 바로 다음에 삽입
+                clickedRow.after(detailContent);
+
+                // 수정 버튼
+                $('#update_btn').on('click', function() {
+                    if (userNum) { // userNum 값이 설정되어 있는지 확인합니다.
+                        $('.detail-container').load('/privacy-admin/user-management/user-detail-update.do?user_num=' + userNum);
+                    } else {
+                        console.error('userNum is not defined!');
+                    }
+                });
+                
+                // 닉네임 변수
+                const nickname = $('#detail-user-nickname').text();
+
+                // 모달 변수
+                const modal = document.getElementById("suspendModal");
+
+                // 정지 버튼 클릭 이벤트
+                $('#suspend_btn').on('click', function() {
+                    const confirmationMessage = nickname + "님의 계정을 정지시키시겠습니까?";
+                    if (!window.confirm(confirmationMessage)) {
+                        return;
+                    }
+                    modal.style.display = "block";
+                });
+
+                // 정지 모달 내의 "확인" 버튼 클릭 이벤트
+                const confirmBtn = document.getElementById("suspend_confirm_btn");
+                confirmBtn.onclick = function() {
+                    const reason = document.getElementById("suspended_reason").value;
+                    const duration = document.getElementById("suspension_duration").value;
+                    const errorMessage = document.querySelector(".suspend-error");
+                    
+                    // 유효성 검사
+                    if (!reason.trim()) {
+                        errorMessage.textContent = "정지 사유를 입력해주세요.";
+                        return false;
+                    }
+                    if (!duration.trim()) {
+                        errorMessage.textContent = "정지 기한을 선택해주세요.";
+                        return false;
+                    }
+                    errorMessage.textContent = "";
+
+                    // ajax 호출을 실행하여 사용자를 정지
+                    const userNum = $('#userData').text();
+                    if (userNum) {
+                        $.ajax({
+                            url: "/api/suspend-user",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                userNum: userNum,
+                                action: 'suspend',
+                                reason: reason,
+                                duration: duration
+                            }),
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    alert(nickname + "님의 계정이 정지되었습니다.");
+                                    location.reload();
+                                } else {
+                                    console.error('Error suspending user:', response.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                alert("회원 정지 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                            }
+                        });
+                    } else {
+                        console.error('userNum is not defined!');
+                    }
+                    console.log(reason);
+                    modal.style.display = "none";
+                };
+
+                // 모달 닫기 버튼
+                $('.close-btn').on('click', function() {
+                    $('#suspendModal').hide();
+                });
+
+                // 모달 외부 클릭 시 모달 닫기
+                $(window).on('click', function(event) {
+                    if ($(event.target).is('#suspendModal')) {
+                        $('#suspendModal').hide();
+                    }
+                });
+
+
+                // 정지 해제 버튼 클릭 이벤트
+                $('#unsuspend_btn').on('click', function() {
+                    const nickname = $('#detail-user-nickname').text();
+                    const confirmationMessage = nickname + "님의 정지를 정말 해제하시겠습니까?";
+                    if (!window.confirm(confirmationMessage)) {
+                        return;
+                    }
+
+                    const userNum = $('#userData').text();
+                    if (userNum) {
+                        $.ajax({
+                            url: "/api/suspend-user",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                userNum: userNum,
+                                action: 'unsuspend'
+                            }),
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    alert(nickname + "님의 계정이 정지 해제되었습니다.");
+                                    location.reload();
+                                } else {
+                                    console.error('Error unsuspending user:', response.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                alert("회원 정지 해제 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                            }
+                        });
+                    } else {
+                        console.error('userNum is not defined!');
+                    }
+                });
+
+                // 삭제 버튼
+                $('#delete_btn').on('click', function() {
+                    const nickname = $('#detail-user-nickname').text();
+                    // 삭제 확인 알림
+                    let confirmationMessage = nickname + "님의 계정을 정말 삭제시키시겠습니까?";
+    
+                    if (!window.confirm(confirmationMessage)) {
+                        return;
+                    }
+
+                    // ajax 회원 정보 삭제 post 요청
+                    $.ajax({
+                        url: "/api/remove-user",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ userNum: userNum }),
+                        success: function(response) {
+                            alert(nickname + "님의 계정이 삭제되었습니다.");
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            alert("회원 삭제 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        });
+    });
+    </script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/privacy-admin :: userManagementSidebar"></div>
+    <div class="content">
+        <h2>회원 관리</h2>
+        <!-- Table 1 -->
+        <div class="table-area">
+        <h3>이달의 신규 가입 회원 : <span th:text = ${#lists.size(newUsers)} style="color:#14B8A6;"></span>명</h3>
+        <table id="newUsers-table">
+            <thead>
+                <tr>
+                    <th>회원 번호</th>
+                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>닉네임</th>
+                    <th>생년월일</th>
+                    <th>성별</th>
+                    <th>회원가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="user-row" th:each="newUser, stat : ${newUsers}" th:if="${stat.count <= 5}">
+                    <td th:text="${newUser.user_num}"></td>
+                    <td th:text="${newUser.id}"></td>
+                    <td th:text="${newUser.name}"></td>
+                    <td th:text="${newUser.nickname}"></td>
+                    <td th:text="${#dates.format(newUser.birth, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${newUser.gender == 'M' ? '남성' : '여성'}"></td>
+                    <td th:text="${#dates.format(newUser.created_at, 'yyyy-MM-dd')}"></td>
+                </tr>
+                <tr th:if="${#lists.size(newUsers) > 5}">
+                    <td colspan="7">
+                        <a href="/privacy-admin/user-management/new-users.do">더보기 - 신규 가입 회원 페이지로 이동하기</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <!-- Table 2 -->
+        <div class="table-area">
+        <h3>이 달의 탈퇴 회원 : <span th:text = ${#lists.size(withdrawnUsers)} style="color:#B81426;"></span>명</h3>
+        <table id="withdrawnUsers-table">
+            <thead>
+                <tr>
+                    <th>회원 번호</th>
+                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>닉네임</th>
+                    <th>탈퇴일</th>
+                    <th>탈퇴 이유</th>
+                    <th>회원 삭제</th>
+                </tr>
+            </thead>
+                <tr class="user-row" th:each="withdrawnUser, stat : ${withdrawnUsers}" th:if="${stat.count <= 5}">
+                    <td th:text="${withdrawnUser.user_num}"></td>
+                    <td th:text="${withdrawnUser.id}"></td>
+                    <td th:text="${withdrawnUser.name}"></td>
+                    <td th:text="${withdrawnUser.nickname}"></td>
+                    <td th:text="${#dates.format(withdrawnUser.deleted_at, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${withdrawnUser.deleted_reason}"></td>
+                    <td><button class="table_btn withdrawn_delete_btn">계정 삭제</button></td>
+                </tr>
+                <tr th:if="${#lists.size(withdrawnUsers) > 5}">
+                    <td colspan="7">
+                        <a href="/privacy-admin/user-management/withdrawn-users.do">더보기  - 탈퇴한 회원 페이지로 이동하기</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <!-- Table 3 -->
+        <div class="table-area">
+        <h3>이 달의 정지 회원 : <span th:text = ${#lists.size(suspendedUsers)} style="color:#A614B8;"></span>명</h3>
+        <table id="suspendedUsers-table">
+            <thead>
+                <tr>
+                    <th>회원 번호</th>
+                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>정지일</th>
+                    <th>정지 기한</th>
+                    <th>정지 사유</th>
+                    <th>정지 처리자</th>
+                    <th>정지 관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="user-row" th:each="suspendedUser, stat : ${suspendedUsers}" th:if="${stat.count <= 5}">
+                    <td th:text="${suspendedUser.user_num}"></td>
+                    <td th:text="${suspendedUser.id}"></td>
+                    <td th:text="${suspendedUser.name}"></td>
+                    <td th:text="${#dates.format(suspendedUser.suspended_at, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${suspendedUser.suspension_duration == 10000 ? '영구 정지' : suspendedUser.suspension_duration + '일'}"></td>
+                    <td th:text="${suspendedUser.suspended_reason}"></td>
+                    <td th:text="${suspendedUser.suspend_user_num}"></td>
+                    <td><button class="table_btn suspend_btn">정지 해제</td>
+                </tr>
+                <tr th:if="${#lists.size(suspendedUsers) > 5}">
+                    <td colspan="8">
+                        <a href="/privacy-admin/user-management/suspended-users.do">더보기  - 정지된 회원 페이지로 이동하기</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    
+</div>

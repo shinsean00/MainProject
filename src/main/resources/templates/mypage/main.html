@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>마이페이지</title>
+</head>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <style>
+        /* 캘린더 */
+        #calendar-area {
+            width: 500px;
+            height: 435px;
+            padding: 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #9fe1da;
+            transition: box-shadow 0.3s;
+        }
+        #calendar-area:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #calendar {
+            max-width: px;
+            margin: 0 auto;
+        }
+        .fc-daygrid-day-top .fc-daygrid-day-number {
+            padding: 0px 4px;
+        }
+        .fc .fc-button {
+            line-height: 0;
+            font-weight: 500;
+        }
+        .fc .fc-button-primary {
+            background-color: #14b8a6;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .fc .fc-button-primary:hover {
+            background-color: #0d766a;
+        }
+        td { 
+            font-size: 13px;
+        }
+        .fc-event {
+            transition: background-color 0.3s;
+            transition: border-color 0.3s;
+            background-color: transparent;
+            border: none;
+            color: black;
+        }
+        .fc-event:hover {
+            background-color: rgba(128, 128, 128, 0.1); 
+            border: none;
+            color: black;
+        }
+        .fc-daygrid-dot-event {
+            align-items: center;
+            display: flex;
+            padding: 2px 0px;
+        }
+        .fc ::after, .fc ::before {
+            vertical-align: top;
+        }
+        .fc-event-title-container {
+            background-color: #14b8a6;
+            border-radius: 3px;
+        }
+        .fc-event-title-container:hover {
+            opacity: 0.7;
+        }
+        .fc-daygrid-event-dot {
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .fc-event-title {
+            margin-left: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 툴팁 */
+        .popper,
+        .tooltip {
+            position: absolute;
+            z-index: 9999;
+            background: #d7f3f0;
+            color: black;
+            width: 150px;
+            border-radius: 3px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+            padding: 10px;
+            text-align: center;
+        }
+        .style5 .tooltip {
+            background: #1E252B;
+            color: #FFFFFF;
+            max-width: 200px;
+            width: auto;
+            font-size: .8rem;
+            padding: .5em 1em;
+        }
+        .popper .popper__arrow,
+        .tooltip .tooltip-arrow {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            position: absolute;
+            margin: 5px;
+        }
+
+        .tooltip .tooltip-arrow,
+        .popper .popper__arrow {
+            border-color: #d7f3f0;
+        }
+        .style5 .tooltip .tooltip-arrow {
+            border-color: #1E252B;
+        }
+        .popper[x-placement^="top"],
+        .tooltip[x-placement^="top"] {
+            margin-bottom: 5px;
+        }
+        .popper[x-placement^="top"] .popper__arrow,
+        .tooltip[x-placement^="top"] .tooltip-arrow {
+            border-width: 5px 5px 0 5px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            bottom: -5px;
+            left: calc(50% - 5px);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .popper[x-placement^="bottom"],
+        .tooltip[x-placement^="bottom"] {
+            margin-top: 5px;
+        }
+        .tooltip[x-placement^="bottom"] .tooltip-arrow,
+        .popper[x-placement^="bottom"] .popper__arrow {
+            border-width: 0 5px 5px 5px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            top: -5px;
+            left: calc(50% - 5px);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .tooltip[x-placement^="right"],
+        .popper[x-placement^="right"] {
+            margin-left: 5px;
+        }
+        .popper[x-placement^="right"] .popper__arrow,
+        .tooltip[x-placement^="right"] .tooltip-arrow {
+            border-width: 5px 5px 5px 0;
+            border-left-color: transparent;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            left: -5px;
+            top: calc(50% - 5px);
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .popper[x-placement^="left"],
+        .tooltip[x-placement^="left"] {
+            margin-right: 5px;
+        }
+        .popper[x-placement^="left"] .popper__arrow,
+        .tooltip[x-placement^="left"] .tooltip-arrow {
+            border-width: 5px 0 5px 5px;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            right: -5px;
+            top: calc(50% - 5px);
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src='fullcalendar/core/locales/es.global.js'></script>
+    <script src='https://unpkg.com/popper.js/dist/umd/popper.min.js'></script>
+    <script src='https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js'></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var eventsFromServer = /*[[${eventsList}]]*/ [];
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/mypage.js}"></script>
+    <script>
+        $(document).ready(function() {
+            $("#myInfo-area").on("click", function() {
+                window.location.href = "/mypage/my-info-management.do";
+            });
+            $(".myPetInfo-area").on("click", function() {
+                window.location.href = "/mypage/pet-list.do";
+            });
+        });
+    </script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+    <div class="content">
+        <h2>마이페이지</h2>
+        <div class="mypage-wrapper">
+            <div id="info-wrapper">
+                <div id="myInfo-area">
+                    <div class="img-div"><img id="my-page-profile-img" th:src="@{${user.profile_picture}}"></div>
+                    <div class="info-li">
+                        <li><strong>회원 번호 : </strong> <span th:text="${user.user_num}"></span></li>
+                        <li><strong>회원 등급 : </strong> <img th:src="${user.rank.imagePath}" id="rank-img"><span th:text="${user.rank.displayName}"></span></li>
+                        <li><strong>닉네임 : </strong> <span th:text="${user.nickname}"></span></li>
+                    </div>
+                </div>
+			<div class="myPetInfo-area" th:if="${pet != null and #lists.size(pet) > 0}">
+				<div><img id="my-pet-profile-img" th:src="@{${pet[0].profile_picture}}"></div>
+				<div class="info-li">
+					<li><strong>이름 : </strong> <span th:text="${pet[0].name}"></span></li>
+					<li><strong>나이 : </strong> <span></span></li>
+					<li style="display: none;"><strong>생일 : </strong> <span th:text="${pet[0].birth}" id="pet-birth"></span></li>
+				</div>
+			</div>
+			
+			<div class="myPetInfo-area" th:if="${pet == null or #lists.size(pet) == 0}">
+				<p class="null-message">등록된 반려친구 정보가 없습니다.<br>반려친구를 등록해주세요!</p>
+			</div>
+            </div>
+            <div id="calendar-area">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

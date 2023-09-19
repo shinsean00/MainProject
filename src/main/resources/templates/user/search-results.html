@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+
+<!-- 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .container {
+            font-family: Arial, sans-serif;
+            width: 100%;
+            background-color: #f5f5f5;
+        }
+
+        .inner-container {
+            padding: 20px;
+            margin: 0 auto;
+            width: 1024px;
+        }
+
+        #search-term {
+            color: #109385;
+        }
+
+        .search-img {
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .search-img-label {
+            font-size: 24px;
+            font-weight: bold;
+            color: #14B8a6;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #ai-area, #board-area {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        #gpt-answer {
+            background-color: #E8F6F3;
+            border-radius: 8px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            color: #109385;
+            font-weight: bold;
+        }
+
+        .content div {
+            margin-bottom: 15px;
+        }
+        .article-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .related-article {
+            border: 1px solid #e0e0e0;
+            padding: 15px 20px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .related-article:hover {
+            background-color: #E8F6F3;
+        }
+        .article-title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .article-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: pre-line; /* 줄바꿈 */
+        }
+        .write-info {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            margin-bottom: 0px !important;
+        }
+        .write-info span:first-child{
+            padding-right: 7px;
+            margin-right: 7px;
+            border-right: 1px solid #cacaca;
+        }
+        .article-link:visited {
+            color: #109385;
+        }
+    </style>
+</th:block>
+<!-- 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!--    <script th:src="@{/js/page/home.js}"></script>-->
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <div class="inner-container">
+        <div class="content">
+            <h2>'<span id="search-term" th:text="${searchTerm}"></span>'에 대한 검색 결과<span th:if="${isResult} == true"> 총 <span th:text="${searchResults.size()}"></span>건</span><span th:if="${isResult} == false">가 없습니다 ㅜㅡㅜ</span></h2>
+            <div id="ai-area">
+                <span class="search-img-label"><img src="/img/search-ai.png" class="search-img">AI 추천 답변</span>
+                <div id="gpt-answer" th:text="${gptAnswer}"></div>
+            </div>
+            <div id="board-area">
+                <span class="search-img-label"><img src="/img/search-article.png" class="search-img">관련 게시글 (<span th:if="${isResult} == true" th:text="${searchResults.size()}"></span><span th:if="${isResult} == false">0</span>건)</span>
+                <div class="related-article" th:each="board : ${searchResults}" th:data-post-num="${board.post_num}">
+                    <div th:if="${board.post_num} != -1">
+                        <a th:href="@{'/board/viewArticle.do?post_num=' + ${board.post_num}}" class="article-link" target="_blank">
+                            <div class="article-title" th:text="${board.title}"></div>
+                            <div class="article-content" th:text="${board.content}"></div>
+                            <div class="write-info">
+                                <span th:text="${board.author}"></span>
+                                <span th:text="${#dates.format(board.created_at, 'yyyy-MM-dd HH:mm')}"></span>
+                            </div>
+                        </a>
+                    </div>
+                    <div th:if="${board.post_num} == -1">
+                        <div class="article-title" th:text="${board.title}"></div>
+                        <div class="article-content" th:text="${board.content}"></div>
+                        <div class="write-info">
+                            <span th:text="${board.author}"></span>
+                            <span th:text="${#dates.format(board.created_at, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

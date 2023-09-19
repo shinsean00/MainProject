@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+	<!-- user-management-sidebar-->
+	<div th:fragment="userManagementSidebar" class="sidebar">
+		<ul class="sidebar-menu">
+			<a class="menu-title" href="/privacy-admin/user-management/main.do">회원관리</a>
+			<li><a href="/privacy-admin/user-management/user-list.do">회원 정보 관리</a></li>
+			<li><a href="/privacy-admin/user-management/user-rank-management.do">회원 등급 관리</a></li>
+			<li><a href="/privacy-admin/user-management/new-users.do">신규 가입 회원</a></li>
+			<li><a href="/privacy-admin/user-management/suspended-users.do">정지된 회원</a></li>
+			<li><a href="/privacy-admin/user-management/withdrawn-users.do">탈퇴한 회원</a></li>
+			<li><a href="/privacy-admin/user-management/admin-list.do">관리자 리스트</a></li>
+		</ul>
+		<div class="contact-us">
+			<a href="/board/articles-list.do?categoryNum=7">고객문의함</a>
+		</div>
+	</div>
+	<!-- pet-management-sidebar-->
+	<div th:fragment="petManagementSidebar" class="sidebar">
+		<ul class="sidebar-menu">
+			<a class="menu-title" href="">반려동물 관리</a>
+			<li><a href="/privacy-admin/pet-management/admin-pet-list.do">반려 동물 리스트</a></li>
+		</ul>
+		<div class="contact-us">
+			<a href="/board/articles-list.do?categoryNum=7">고객문의함</a>
+		</div>
+	</div>
+	<!-- category-management-sidebar-->
+	<div th:fragment="eventManagementSidebar" class="sidebar">
+		<ul class="sidebar-menu">
+			<a class="menu-title" href="">일정 관리</a>
+			<li><a href="/event/adminlistEvents.do">일정 관리</a></li>
+		</ul>
+		<div class="contact-us">
+			<a href="/board/articles-list.do?categoryNum=7">고객문의함</a>
+		</div>
+	</div>
+
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.mappers.CommentMapper">
+
+    <!-- 댓글 조회 -->
+    <select id="getComment" parameterType="int" resultType="com.mainproject.comment.dto.CommentDTO">
+        SELECT * FROM TB_COMMENT WHERE Comment_Num = #{commentNum}
+    </select>
+
+    <!-- 댓글 생성 -->
+    <insert id="createComment" parameterType="com.mainproject.comment.dto.CommentDTO">
+        INSERT INTO TB_COMMENT (Parent_Comment_Num, Post_Num, Content, Created_User_Num, Created_At)
+        VALUES (#{parentCommentNum}, #{postNum}, #{content}, #{createdUserNum}, #{createdAt})
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="com.mainproject.comment.dto.CommentDTO">
+        UPDATE TB_COMMENT
+        SET Content = #{content}
+        WHERE Comment_Num = #{commentNum}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="int">
+        UPDATE TB_COMMENT
+        SET Is_Deleted = true, Deleted_User_Num = #{deletedUserNum}, Deleted_At = NOW()
+        WHERE Comment_Num = #{commentNum}
+    </delete>
+
+    <!-- 대댓글 조회 -->
+
+	<select id="getReply" parameterType="int" resultType="com.mainproject.comment.dto.ReplyDTO">
+	    SELECT * FROM TB_REPLY WHERE Reply_Num = #{replyNum}
+	</select>
+	
+	<!-- 대댓글 생성 -->
+	<insert id="createReply" parameterType="com.mainproject.comment.dto.ReplyDTO">
+	    INSERT INTO TB_REPLY (Comment_Num, Content, Created_User_Num, Created_At)
+	    VALUES (#{commentNum}, #{content}, #{createdUserNum}, #{createdAt})
+	</insert>
+	
+	<!-- 대댓글 수정 -->
+	<update id="updateReply" parameterType="com.mainproject.comment.dto.ReplyDTO">
+	    UPDATE TB_REPLY
+	    SET Content = #{content}
+	    WHERE Reply_Num = #{replyNum}
+	</update>
+	
+	<!-- 대댓글 삭제 -->
+	<delete id="deleteReply" parameterType="int">
+	    UPDATE TB_REPLY
+	    SET Is_Deleted = true, Deleted_User_Num = #{deletedUserNum}, Deleted_At = NOW()
+	    WHERE Reply_Num = #{replyNum}
+	</delete>
+</mapper>

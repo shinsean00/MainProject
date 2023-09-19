@@ -1,0 +1,110 @@
+<!-- 테스트를 위해서 넣어둠 -->
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      
+
+<!-- 페이지의 제목 설정 -->
+	<title>captcha-image</title>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+	<link rel="stylesheet" th:href="@{/css/captcha.css}"/>
+</th:block>
+
+<!-- 테스트를 위해서 넣어둠 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<div id="captchaProtection">
+		<div class="captcha-message">
+			<p id="captcha-message1">정보보호를 위해 자동입력방지 문자를 인증해주세요.</p>
+			<p id="captcha-message2">아래 이미지를 보이는 대로 입력해주세요.</p>
+		</div>
+		<img id="captchaImage" src="" alt="CAPTCHA">
+		<div class="captcha-container">
+			<div class="captcha-area"><img class="input-img" src="/img/captcha-input.png"><input type="text" id="captchaInput" placeholder="자동입력 방지문자"></div>
+			<button type="button" id="captchaCheck_btn" class="captcha-btn"></button>
+			<button type="button" id="captchaRefresh_btn" class="captcha-btn"></button>
+		</div>
+		<div id="captchaError" class="error"></div>
+	</div>
+	
+<script>
+	$(document).ready(function() {
+        fetchCaptchaImage(); // captcha 이미지 요청 메소드
+        var captchaCheckComplete = false; // captcha 체크 변수
+        $("#captchaCheck_btn").prop("disabled", false); // 버튼 활성화
+        $("#captchaRefresh_btn").prop("disabled", false); // 버튼 활성화
+		// captcha input 이미지 변경 로직
+        $("#captchaInput").on('focus', function() {
+            $(".captcha-area img").attr("src", "/img/captcha-input2.png");
+        });
+        $("#captchaInput").on('blur', function() {
+            $(".captcha-area img").attr("src", "/img/captcha-input.png");
+        });
+		$("#captchaInput").on('keypress', function(event) {
+		if (event.which == 13) {  // 13은 엔터키의 코드
+			event.preventDefault();  // 기본 이벤트(폼 제출)를 막음
+			$("#captchaCheck_btn").click();  // captchaCheck_btn의 클릭 이벤트를 트리거
+		}
+	});
+	});
+	// captcha 이미지 요청 로직
+	function fetchCaptchaImage() {
+	    $.ajax({
+	        url: "/api/captcha-image",
+	        type: "GET",
+	        success: function(captchaResponse) {
+	            var captchaImage = "data:image/png;base64," + captchaResponse.captchaImage;
+	            // console.log(captchaResponse.captchaKey);
+	            $("#captchaImage").attr("src", captchaImage).data("key", captchaResponse.captchaKey);
+	        },
+	        error: function() {
+	            $("#loginError").text("CAPTCHA 이미지를 가져오는 데 실패했습니다.");
+	        }
+	    });
+	}
+	// captcha 이미지 새로고침 로직
+	$("#captchaRefresh_btn").click(function() {
+		refreshCaptcha();
+		$("#captchaError").text('');
+	});
+	function refreshCaptcha() {
+		$("#captchaInput").val('');
+		fetchCaptchaImage(); // CAPTCHA 이미지 요청 메소드
+	}
+	
+	
+	// captcha 입력값 비교 로직
+	$("#captchaCheck_btn").click(function() {
+    var captchaInputValue = $("#captchaInput").val(); // 사용자 입력 값
+    var captchaKey = $("#captchaImage").data("key"); // 이미지 요청시 받아온 captcha key
+    $.ajax({
+        url: "/api/captcha-check",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ value: captchaInputValue, key: captchaKey }),
+        success: function(response) {
+            if (response.valid) {
+                captchaCheckComplete = true;
+                $("#captchaProtection").addClass("captcha-success");
+				$("#captchaInput").addClass("captcha-success");
+                $("#captchaError").text("인증에 성공하였습니다.");
+                $("#captchaError").css("color", "#4CAF50");
+                $("#captchaCheck_btn").prop("disabled", true); // 버튼 비활성화
+                $("#captchaRefresh_btn").prop("disabled", true); // 버튼 비활성화
+                captchaRequired = false; // captcha 적용 페이지 변수 제어
+            } else {
+                captchaCheckComplete = false;
+                $("#captchaProtection").removeClass("captcha-success");
+                $("#captchaError").text("입력한 CAPTCHA 값이 잘못되었습니다.");
+                refreshCaptcha();
+            }
+        },
+        error: function() {
+            $("#captchaError").text("CAPTCHA 검증 중 오류가 발생했습니다.");
+        }
+    });
+});
+</script>

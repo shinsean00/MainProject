@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>일정 수정</title>
+</head>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <!--    <link rel="stylesheet" th:href="@{/css/page/home.css}" >-->
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!--    <script th:src="@{/js/page/home.js}"></script>-->
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+    <div class="content">일정 수정</div>
+    
+    <style>
+        .form-container {
+            margin-top: 40px; /* 조절할 여유값을 설정하세요 */ 
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+        }
+
+        .date-range input {
+            margin: 0 5px;
+        }
+    </style>
+
+    <div class="form-container">
+        <form th:action="@{/event/updateEvent}" th:object="${event}" method="post">
+            <input type="hidden" name="event_num" th:value="${event.event_num}" />
+            
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" id="title" name="title" th:field="*{title}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="started_at">시작일/종료일</label> 
+                <div class="date-range">
+                    <input type="text" id="started_at_input" th:field="*{started_at}" required>
+                    <span>~</span>
+                    <input type="text" id="ended_at_input" th:field="*{ended_at}" required>
+                </div> 
+            </div>   
+
+            <div class="form-group">
+                <label for="location">장소</label> 
+                <input type="text" id="location" name="location" th:field="*{location}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">내용</label>
+                <input type="text" id="content" name="content" th:field="*{content}" required>
+            </div>
+
+            <button type="submit">수정 완료</button>
+        </form>
+    </div>
+</div>
+    
+</div> 
+</body> 
+</html>

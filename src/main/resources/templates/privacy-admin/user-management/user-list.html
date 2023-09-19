@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}">
+
+<head>
+    <!-- 페이지의 제목 설정 -->
+    <title>회원 리스트</title>
+
+    <!-- 해당 페이지 고유 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/user-management.css}"/>
+    </th:block>
+
+    <!-- 해당 페이지 고유 스크립트 추가 -->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            window.users = /*[[${users}]]*/ [];
+        </script>
+        <script th:src="@{/js/user-management.js}"></script>
+    </th:block>
+</head>
+
+<body data-page-type="userManagement">
+    <!-- Content -->
+    <div layout:fragment="content" class="container">
+        <!-- sidebar fragment 사용 -->
+        <div th:replace="sidebar/privacy-admin :: userManagementSidebar"></div>
+        <div class="content">
+            <h2>회원 정보 관리</h2>
+            <table>
+                <div class="table-top-wrapper">
+                    <select id="itemsPerPageSelect">
+                        <option value="10">10개로 보기</option>
+                        <option value="25">25개로 보기</option>
+                        <option value="50">50개로 보기</option>
+                        <option value="100">100개로 보기</option>
+                    </select>
+                    <span>회원 전체 리스트</span>
+                    <div class="table-search-area">
+                        검색 : <input>
+                    </div>
+                </div>
+                <thead>
+                    <tr>
+                        <th>회원 번호 <button type="button" class="sort_btn"></button></th>
+                        <th>아이디 <button type="button" class="sort_btn"></button></th>
+                        <th>이름 <button type="button" class="sort_btn"></button></th>
+                        <th>닉네임 <button type="button" class="sort_btn"></button></th>
+                        <th>회원 등급 <button type="button" class="sort_btn"></button></th>
+                        <th>생년월일 <button type="button" class="sort_btn"></button></th>
+                        <th>성별 <button type="button" class="sort_btn"></button></th>
+                        <th>탈퇴 여부 <button type="button" class="sort_btn"></button></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.user_num}"></td>
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.name}"></td>
+                        <td th:text="${user.nickname}"></td>
+                        <td th:text="${user.rank}"></td>
+                        <td th:text="${#dates.format(user.birth, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${user.gender == 'M' ? '남성' : '여성'}"></td>
+                        <td th:text="${user.is_deleted}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="paging-area">
+                <div id="displayRange">
+                    <span id="">총 <b><span id="usersLength" th:text="${users.size()}"></b></span>개 항목 중 <b><span id="startRange">1</span></b> ~ <b><span id="endRange">10</span></b>번 항목까지 표시 중입니다.</span>
+                </div>
+                <div class="pagination">
+                    <button id="previousPageButton"></button>
+                    <!-- <span>페이지 : <span id="currentPageDisplay"></span> / <span id="totalPagesDisplay"></span></span> -->
+                    <span id="pageNumberContainer"></span>
+                    <button id="nextPageButton"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

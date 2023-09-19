@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!--article-sidebar-->
+    <div th:fragment="articleSidebar" class="sidebar">
+        <ul class="sidebar-menu">
+            <a><b>게시판</b></a>
+
+           <li><a>동물 게시판</a>
+                <ul>
+                    <li><a href="/board/articles-list.do?categoryNum=3">강아지</a></li>
+                    <li><a href="/board/articles-list.do?categoryNum=4">고양이</a></li>
+                </ul>
+            </li>
+            <li><a>식물 게시판</a>
+                <ul>
+                    <li><a href="/board/articles-list.do?categoryNum=5">화초</a></li>
+                    <li><a href="/board/articles-list.do?categoryNum=6">작물</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="contact-us">
+            <a href="/board/articles-list.do?categoryNum=7">고객문의</a>
+        </div>
+    </div>
+</body>
+</html>

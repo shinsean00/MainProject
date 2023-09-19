@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.user">
+    <resultMap id="userResultMap" type="userVO">
+        <result property="user_num" column="user_num"/>
+        <result property="id" column="id"/>
+        <result property="pwd" column="pwd"/>
+        <result property="name" column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="birth" column="birth"/>
+        <result property="country_code" column="country_code"/>
+        <result property="first_hp" column="first_hp"/>
+        <result property="second_hp" column="second_hp"/>
+        <result property="gender" column="gender"/>
+        <result property="is_admin" column="is_admin"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_user_num" column="updated_user_num"/>
+        <result property="updated_at" column="updated_at"/>
+        <result property="is_deleted" column="is_deleted"/>
+        <result property="deleted_user_num" column="deleted_user_num"/>
+        <result property="deleted_at" column="deleted_at"/>
+        <result property="deleted_reason" column="deleted_reason"/>
+        <result property="fail_count" column="fail_count"/>
+        <result property="rank" column="rank"/>
+        <result property="is_suspended" column="is_suspended"/>
+        <result property="profile_picture" column="profile_picture"/>
+    </resultMap>
+
+    <insert id="registerUser" parameterType="userVO">
+        INSERT INTO TB_USER (user_num, id, pwd, name, nickname, email, birth, country_code, first_hp, second_hp, gender, is_admin, created_at, profile_picture)
+        VALUES (#{user_num}, #{id}, #{pwd}, #{name}, #{nickname}, #{email}, #{birth}, #{country_code}, #{first_hp}, #{second_hp}, #{gender}, #{is_admin}, #{created_at}, #{profile_picture})
+    </insert>
+
+	<select id="checkIdDuplicate" resultType="int">
+    	SELECT COUNT(*) FROM TB_USER WHERE ID = #{value}
+	</select>
+
+	<select id="checkNicknameDuplicate" resultType="int">
+   		SELECT COUNT(*) FROM TB_USER WHERE Nickname = #{value}
+	</select>
+
+	<select id="getUserByUsername" parameterType="String" resultType="userVO">
+        SELECT * FROM TB_USER WHERE ID = #{username}
+    </select>
+    
+    <update id="updateUserWithPassword" parameterType="userVO">
+    	UPDATE TB_USER
+        SET
+            email = #{email},
+            nickname = #{nickname},
+            birth= #{birth},
+            first_hp = #{first_hp},
+            second_hp = #{second_hp},
+            updated_at = #{updated_at},
+            pwd = #{pwd},
+            updated_at = #{updated_at},
+            updated_user_num = #{updated_user_num}
+        WHERE user_num = #{user_num}
+    </update>
+	
+	<update id="updateUserWithoutPassword" parameterType="userVO">
+		UPDATE TB_USER
+        SET
+            email = #{email},
+            nickname = #{nickname},
+            birth= #{birth},
+            country_code = #{country_code},
+            first_hp = #{first_hp},
+            second_hp = #{second_hp},
+            updated_at = #{updated_at},
+            updated_user_num = #{updated_user_num}
+        WHERE user_num = #{user_num}
+    </update>
+    
+    <update id="updateUserProfile" parameterType="Map">
+    	UPDATE TB_USER
+    	SET profile_picture = #{filePath}
+    	WHERE id = #{userID}
+    </update>
+    
+    <update id="deleteUser" parameterType="userVO">
+		UPDATE TB_USER
+        SET
+            deleted_at = #{deleted_at},
+            deleted_reason = #{deleted_reason},
+            deleted_user_num = #{deleted_user_num},
+            is_deleted = #{is_deleted}
+        WHERE user_num = #{user_num}
+    </update>
+
+	<update id="increaseLoginFailCount" parameterType="String">
+		UPDATE TB_USER
+		SET fail_count = fail_count + 1
+		WHERE id = #{username};
+	</update>
+	
+	<update id="resetLoginFailCount" parameterType="String">
+		UPDATE TB_USER
+		SET fail_count = 0
+		WHERE id = #{username};
+	</update>
+	
+	<!-- 관리자 영역 -->
+    <select id="getAllAccounts" resultType="userVO">
+		SELECT * FROM TB_USER;
+	</select>
+
+	<select id="getAllUsers" resultType="userVO">
+		SELECT * FROM TB_USER WHERE is_admin = 'User';
+	</select>
+
+    <select id="getAllAdmins" resultType="userVO">
+        SELECT * FROM TB_USER WHERE is_admin IN ('Admin', 'privacy_admin');
+    </select>
+	
+	<select id="getUserByUserNum" parameterType="int" resultType="userVO">
+		SELECT * FROM TB_USER WHERE user_num = ${user_num};
+	</select> 
+	
+	<update id="updateUserDetail" parameterType="UserVO">
+	    UPDATE TB_USER
+	    SET
+	        id = #{id},
+	        name = #{name},
+	        nickname = #{nickname},
+	        email = #{email},
+	        birth = #{birth},
+	        country_code = #{country_code},
+	        first_hp = #{first_hp},
+	        second_hp = #{second_hp},
+	        gender = #{gender},
+	        is_admin = #{is_admin},
+	        created_at = #{created_at},
+	        updated_user_num = #{updated_user_num},
+	        updated_at = #{updated_at},
+	        is_deleted = #{is_deleted},
+	        deleted_user_num = #{deleted_user_num},
+	        deleted_at = #{deleted_at},
+	        deleted_reason = #{deleted_reason},
+	        fail_count = #{fail_count},
+	        rank = #{rank},
+	        is_suspended = #{is_suspended}
+	    WHERE user_num = #{user_num}
+	</update>
+	
+	<update id="suspendUser" parameterType="userVO">
+	    UPDATE TB_USER 
+        SET 
+            is_suspended = TRUE,
+            suspend_user_num = #{suspend_user_num},
+            suspension_duration = #{suspension_duration},
+            suspended_reason = #{suspended_reason},
+            suspended_at = #{suspended_at}
+        WHERE 
+            user_num = #{user_num}
+	</update>
+	
+	<update id="unsuspendUser" parameterType="int">
+	    UPDATE TB_USER SET is_suspended = FALSE WHERE user_num = #{user_num}
+	</update>
+
+    <delete id="removeUser" parameterType="int">
+        DELETE FROM TB_USER WHERE user_num = #{user_num}
+    </delete>
+	
+    <update id="rankUp" parameterType="userVO">
+        UPDATE TB_USER SET rank = #{nextRank} WHERE user_num = #{user_num}
+    </update>
+
+    <update id="switchRank" parameterType="userVO">
+        UPDATE TB_USER 
+        SET rank = #{newRank}, is_admin = #{newRole}
+        WHERE user_num = #{user_num}
+    </update>
+
+    <select id="getNewUsers" resultType="userVO">
+        SELECT * 
+        FROM TB_USER
+        WHERE MONTH(created_at) = MONTH(CURDATE()) 
+        AND YEAR(created_at) = YEAR(CURDATE());
+    </select>
+
+    <select id="getWithdrawnUsersThisMonth" resultType="userVO">
+        SELECT * FROM TB_USER
+        WHERE is_deleted = true
+        AND MONTH(deleted_at) = MONTH(CURDATE()) 
+        AND YEAR(deleted_at) = YEAR(CURDATE());
+    </select>
+
+    <select id="getWithdrawnUsers" resultType="userVO">
+        SELECT * FROM TB_USER WHERE is_deleted = true;
+    </select>
+
+    <select id="getSuspendUsers" resultType="userVO">
+        SELECT * FROM TB_USER WHERE is_suspended = true;
+    </select>
+
+    <select id="getSuspendedUsersThisMonth" resultType="userVO">
+        SELECT * FROM TB_USER
+        WHERE is_suspended = true
+        AND MONTH(suspended_at) = MONTH(CURDATE()) 
+        AND YEAR(suspended_at) = YEAR(CURDATE());
+    </select>
+</mapper>

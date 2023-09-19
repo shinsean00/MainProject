@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminLayout}">
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+	<!--    <link rel="stylesheet" th:href="@{/css/page/home.css}" >-->
+	<link rel="stylesheet" th:href="@{/css/category.css}" >
+	<link rel="stylesheet" th:href="@{/css/admin.css}"/>
+	<style>
+		#register-btn-area {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		#registerError {
+			font-size: 14px;
+			font-weight: 600;
+		}
+		
+		/* Input & Select Styles */
+		input[type="text"], input[type="number"], select {
+		    padding: 5px;
+		    font-size: 12px;
+		    border: 1px solid #ccc;
+		    border-radius: 5px;
+		    outline: none;
+		    transition: border-color 0.2s ease-in-out;
+		}
+		
+		input[type="text"]:focus, input[type="number"]:focus, select:focus {
+		    border-color: #007bff; /* 원하는 포커스 색상으로 변경하세요 */
+		}
+		
+		
+		/* Form Element Styles */
+		form {
+		    display: inline-block; /* form 요소를 인라인 블록으로 설정하여 옆으로 붙임 */
+		    margin-right: 10px; /* form 요소 사이의 간격을 조정 (원하는 간격으로 조정) */
+		}
+		
+		/* Optional: 추가적인 스타일링을 원하는 경우 아래 코드를 사용하세요 */
+		
+		/* 셀렉트 박스 화살표 아이콘 스타일링 */
+		select {
+		    appearance: none;
+		    background-image: url('/img/arrow-down-bold.png'); /* 적절한 화살표 아이콘 경로를 지정하세요 */
+		    background-repeat: no-repeat;
+		    background-position: right center;
+		    background-position: right 10px center; /* 화살표 아이콘을 우측으로 10px 이동 */
+		    padding-right: 30px; /* 화살표 아이콘 공간 확보 */
+		    padding-left: 20px; /* 화살표 아이콘 공간 확보 */
+		    background-size: 15px 15px; /* 너비와 높이를 원하는 크기로 조정 */
+		    cursor: pointer;
+		}
+		
+		/* 셀렉트 박스 드롭다운 스타일링 */
+		select::-ms-expand {
+		    display: none; /* IE에서 드롭다운 화살표 숨기기 */
+		}
+	</style>
+	
+	<!-- <link rel="stylesheet" th:href="@{/css/page/home.css}" > -->
+</th:block>
+<!-- index.html 고유 스크립트 추가 -->
+<th:block>
+	<script>
+	
+	</script>
+</th:block>
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+	<!--    <script th:src="@{/js/page/home.js}"></script>-->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/category :: categorySidebar"></div>
+	<div class="content">
+		<div class="h2-wrapper">
+			<h2>카테고리 관리</h2>
+			<form action="/category/add-category-form.do" method="get">
+				<div id="register-btn-area"><span id="registerError" class="error"></span><button type="submit" id="pet-modal-register-btn" style="height:32px;">카테고리 등록</button></div>
+			</form>
+		</div>
+		<div class="categoty-head">
+			<h3>
+				<a th:href="@{/category/categories-list.do}">카테고리 리스트</a>
+			</h3>
+			<div>
+			<form id="perPageNumSelect" action="/category/categories-list-search.do" method="get">
+				<select name="newPerPageNum">
+					<option value="10" th:selected="${paging.perPageNumVal == 10}">10개씩
+						보기</option>
+					<option value="20" th:selected="${paging.perPageNumVal == 20}">20개씩
+						보기</option>
+					<option value="50" th:selected="${paging.perPageNumVal == 50}">50개씩
+						보기</option>
+				</select>
+			</form>
+			<script>
+				$(document).ready(function() {
+					// 셀렉트 박스의 변경 이벤트 리스너 등록
+					$('#perPageNumSelect').on('change', function() {
+						// 선택한 값 가져오기
+						var selectedValue = $(this).val();
+
+						// 페이지당 개수 필드 업데이트
+						$('[name="perPageNum"]').val(selectedValue);
+
+						// 폼 제출
+						$('#perPageNumSelect').submit();
+					});
+				});
+			</script>
+
+			<form id="searchForm" action="/category/categories-list-search.do"	method="get">
+				<select name="searchType">
+					<option value="Category_Num">카테고리 번호</option>
+					<option value="Parent_Category_Num">상위 카테고리 번호</option>
+					<option value="Name">카테고리 이름</option>
+				</select> <input class="table-search-area" type="text" name="keyword" placeholder="검색어를 입력하세요">
+				<input type="hidden" name="page" th:value="${paging.getCurrent()}">
+				<div id="register-btn-area" style="margin-bottom: 10px; display: inline-block;"><span id="registerError" class="error"></span><button type="submit" id="pet-modal-register-btn">검색</button></div>
+			</form>
+		</div>
+	</div>
+
+		<div class="content">
+			<table class="category-table">
+				<tr>
+					<th>No.</th>
+					<th>카테고리 번호</th>
+					<th>상위 카테고리 번호</th>
+					<th>카테고리 이름</th>
+					<th>작성자</th>
+					<th>작성일</th>
+				</tr>
+				<!-- 검색 결과가 없는 경우 -->
+				<tr th:if="${#lists.isEmpty(categoriesList)}">
+					<td colspan="6" class="no-results">검색 결과가 없습니다.</td>
+				</tr>
+
+				<!-- 검색 결과가 있는 경우 -->
+				<tr th:each="category, rowStat : ${categoriesList}">
+				    <td th:text="${(paging.getCurrent() - 1) * paging.getPerPageNumVal() + (rowStat.index + 1)}"></td>
+				    <td th:text="${category.category_num}"></td>
+				    <td th:text="${category.parent_category_num}"></td>
+				    <td><a th:href="@{/category/view-category-detail.do(categoryNum=${category.category_num})}" th:text="${category.name}"></a></td>
+				     <td th:text="${category.created_user_num}"></td>
+				    <td th:text="${#dates.format(category.created_at, 'yyyy-MM-dd')}"></td>
+				</tr>
+			</table>
+		</div>
+
+
+		<!-- 페이징 부분 -->
+		<div class="pagination">
+			<ul>
+				<!-- 처음으로 이동하는 링크 -->
+				<li th:if="${paging.cri.page > 1}"><a
+					th:href="@{/category/categories-list-search.do(page=1, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">처음</a></li>
+				<!-- 10페이지 이전 페이지 링크 -->
+				<li th:if="${paging.startPage - paging.pageCount > 0}"><a
+					th:href="@{/category/categories-list-search.do(page=${paging.startPage - 10}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">
+						<< </a></li>
+				<!-- 1페이지 이전 페이지 링크 -->
+				<li th:if="${paging.cri.page - 1 > 0}"><a
+					th:href="@{/category/categories-list-search.do(page=${paging.getPrev()}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">
+						<span th:if="${paging.cri.page != 1}">이전</span>
+				</a></li>
+				<!-- 페이지 번호 링크 반복 -->
+				<li th:each="num : ${pageNumbers}"
+					th:class="${num == paging.cri.page ? 'active' : ''}"><a
+					th:if="${num <= paging.totalPage}"
+					th:href="@{/category/categories-list-search.do(page=${num}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}"
+					th:text="${num}"></a></li>
+				<!-- 1페이지 다음 페이지 링크 -->
+				<li th:if="${paging.cri.page + 1 <= paging.totalPage}"><a
+					th:href="@{/category/categories-list-search.do(page=${paging.getNext()}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">
+						다음 </a></li>
+				<!-- 10페이지 다음 페이지 링크 -->
+				<li th:if="${paging.endPage + paging.pageCount <= paging.totalPage}">
+					<a
+					th:href="@{/category/categories-list-search.do(page=${paging.endPage + 1}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">
+						>> </a>
+				</li>
+				<!-- 마지막 페이지로 이동하는 링크 -->
+				<li th:if="${paging.endPage + paging.pageCount <= paging.totalPage}">
+					<a
+					th:href="@{/category/categories-list-search.do(page=${paging.totalPage}, searchType=${searchType}, keyword=${keyword}, newPerPageNum=${paging.perPageNumVal})}">
+						마지막 </a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+

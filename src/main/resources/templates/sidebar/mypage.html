@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!--mypage-sidebar-->
+    <div th:fragment="mypageSidebar" class="sidebar">
+        <ul class="sidebar-menu">
+            <a class="menu-title" href="/mypage/main.do">마이페이지</a>
+            <li><a href="/mypage/pet-list.do">반려친구 관리</a></li>
+            <li><a href="/event/listEvents.do">일정 관리</a></li> 
+            <li><a href="/mypage/my-info-management.do">계정 정보 관리</a></li>
+            <li><a href="/mypage/my-info-withdrawal.do">계정 탈퇴</a></li>
+        </ul>
+        <div class="contact-us">
+            <a href="/board/articles-list.do?categoryNum=7">고객문의</a>
+        </div>
+    </div>
+</body>
+</html>

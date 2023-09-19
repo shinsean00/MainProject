@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration     
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+ 
+	
+    <typeAliases>
+        <typeAlias type="com.mainproject.user.vo.UserVO"  alias="userVO" />
+        <typeAlias type="com.mainproject.category.vo.CategoryVO"  alias="categoryVO" />
+        <typeAlias type="com.mainproject.board.vo.BoardVO"  alias="boardVO" />
+		<typeAlias type="com.mainproject.pet.vo.PetVO"  alias="PetVO" />
+        <typeAlias type="com.mainproject.event.vo.EventVO"  alias="eventVO" />
+        <typeAlias type="com.mainproject.board.vo.VoteVO"  alias="voteVO" />
+    </typeAliases>
+</configuration>
+ 
+
+ 

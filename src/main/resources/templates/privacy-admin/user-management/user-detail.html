@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<link rel="stylesheet" th:href="@{/css/user-management.css}">
+</head>
+
+<body>
+	<div class="detail-content"
+		th:classappend="${user.is_deleted} ? 'deleted-user' : (${user.is_suspended} ? 'suspended-user' : '')">
+		<h2 th:text="${user.name + '님의 회원 정보'}">User Information</h2>
+		<div class="basic-info-area">
+			<div><img id="detail-profile-img" th:src="@{${user.profile_picture}}"></div>
+			<div>
+				<li><strong>회원 번호 : </strong> <span id="userData" th:text="${user.user_num}"></span></li>
+				<li><strong>회원 등급 : </strong> <img class="detail-rank-img" th:src="${user.rank.imagePath}"><span
+						th:text="${user.rank.displayName}"></span></li>
+				<li><strong>닉네임 : </strong> <span id="detail-user-nickname" th:text="${user.nickname}"></span></li>
+			</div>
+		</div>
+		<div class="contact-info-area">
+			<ul>
+				<li><strong>아이디 : </strong> <span th:text="${user.id}"></span></li>
+				<li><strong>이름 : </strong> <span th:text="${user.name}"></span></li>
+				<li><strong>성별 : </strong> <span th:text="${user.gender == 'M' ? '남성' : '여성'}"></span></li>
+				<li><strong>생년월일 : </strong> <span th:text="${#dates.format(user.birth, 'yyyy-MM-dd')}"></span></li>
+				<li><strong>이메일 : </strong> <span th:text="${user.email}"></span></li>
+				<li><strong>전화번호 : </strong> <span
+						th:text="${user.country_code + '-' + user.first_hp + '-' + user.second_hp}"></span></li>
+			</ul>
+		</div>
+		<div class="account-info-area">
+			<ul>
+				<li><strong>회원가입일 : </strong> <span
+						th:text="${#dates.format(user.created_at, 'yyyy-MM-dd HH:mm:ss')}"></span></li>
+				<li><strong>현재 로그인 실패 횟수 : </strong> <span th:text="${user.fail_count}"></span></li>
+				<li><strong>회원 정보 수정자 : </strong> <span th:utext="${updatedUserDisplay}"></span></li>
+				<li><strong>회원 정보 수정일 : </strong> <span
+						th:text="${#dates.format(user.updated_at, 'yyyy-MM-dd HH:mm:ss')}"></span></li>
+			</ul>
+		</div>
+		<div class="deletion-info-area">
+			<ul>
+				<li><strong>회원 정지 여부 : </strong> <span th:text="${user.is_suspended}"></span></li>
+				<li><strong>회원 탈퇴 여부 : </strong> <span th:text="${user.is_deleted}"></span></li>
+				<li><strong>회원 탈퇴 처리자 : </strong> <span th:utext="${deletedUserDisplay}"></span></li>
+				<li><strong>회원 탈퇴일 : </strong> <span
+						th:text="${#dates.format(user.deleted_at, 'yyyy-MM-dd HH:mm:ss')}"></span></li>
+				<li><strong>회원 탈퇴 이유 : </strong> <span th:text="${user.deleted_reason}"></span></li>
+			</ul>
+		</div>
+		<div class="button-area">
+			<button id="update_btn" th:if="${!user.is_deleted}">수정</button>
+			<button id="suspend_btn" th:if="${!user.is_deleted && !user.is_suspended}">정지</button>
+			<button id="unsuspend_btn" th:if="${!user.is_deleted && user.is_suspended}">정지 해제</button>
+			<button id="delete_btn">삭제</button>
+		</div>
+	</div>
+	<div id="suspendModal" class="modal">
+		<div class="modal-content">
+			<span class="close-btn">&times;</span>
+			<div class="modal-area">
+				<h2>정지 사유 및 기한 선택</h2>
+				<div class="reason-area">
+					<label for="suspended_reason">정지 사유</label>
+					<textarea id="suspended_reason" rows="2" cols="35"></textarea>
+				</div>
+				<div class="duration-area">
+					<label for="suspension_duration">정지 기한</label>
+					<select id="suspension_duration">
+						<option value="3">3일</option>
+						<option value="7">7일</option>
+						<option value="14">14일</option>
+						<option value="30">30일</option>
+						<option value="10000">영구 정지</option>
+					</select>
+					<div class="button-align-right"><span class="suspend-error"></span> <button
+							id="suspend_confirm_btn">계정 정지</button></div>
+				</div>
+			</div>
+		</div>
+</body>
+
+</html>

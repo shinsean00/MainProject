@@ -1,0 +1,613 @@
+/* Base Styles */
+.content {
+	font: 14px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+	width: 840px;
+}
+
+h2 {
+	padding: 5px 0;
+	margin: 5px 0;
+	margin-left: 5px 0;
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+	width: 100%;
+	table-layout: fixed;
+}
+
+td {
+	padding: 6px 15px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+th {
+	background: #14a6b8;
+	color: #fff;
+	text-align: center;
+	padding: 6px;
+}
+
+/* Table Styles */
+tr:first-child th:first-child {
+	border-top-left-radius: 6px;
+}
+
+tr:first-child th:last-child {
+	border-top-right-radius: 6px;
+}
+
+td {
+	border-right: 1px solid #c6c9cc;
+	border-bottom: 1px solid #c6c9cc;
+}
+
+td:first-child {
+	border-left: 1px solid #c6c9cc;
+}
+
+tr:not(.detail-content-row):nth-child(even) td {
+	background: #dff3f5;
+}
+
+tr:last-child td:first-child {
+	border-bottom-left-radius: 6px;
+}
+
+tr:last-child td:last-child {
+	border-bottom-right-radius: 6px;
+}
+
+tbody tr:not(.detail-content-row):hover {
+	background-color: rgba(20, 166, 184, 0.2);
+}
+
+tbody tr:not(.detail-content-row):nth-child(even):hover td {
+	background-color: rgba(20, 166, 184, 0.2);
+}
+
+tbody tr.detail-content-row:hover td {
+	background-color: #fff !important;
+}
+
+/* Button Styles */
+.sort_btn,
+.sort_btn_up,
+.sort_btn_down {
+	
+	margin: 0 0 3px;
+	border: none;
+	cursor: pointer;
+	background-color: #14a6b8;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align: middle;
+}
+
+.sort_btn {
+	background-image: url("/img/btn-sort.png");
+}
+
+.sort_btn_up {
+	background-image: url("/img/btn-sort-up.png");
+}
+
+.sort_btn_down {
+	background-image: url("/img/btn-sort-down.png");
+}
+
+.table_btn {
+	background-color: #14a6b8;
+	font: 12px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+	color: #ffffff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+	z-index: 5;
+}
+
+.table_btn:hover {
+	filter: brightness(90%) !important;
+}
+
+.rank_up_btn,
+.rank_switch_btn {
+	width: 70px;
+	height: 23px;
+}
+
+.withdrawn_delete_btn {
+	width: 84px;
+	height: 24px;
+}
+
+.suspend_btn {
+	width: 70px;
+	height: 24px;
+}
+
+
+/* Table Top Wrapper */
+.table-top-wrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 7px 0;
+}
+
+.table-top-wrapper>span {
+	font-size: 16px;
+	font-weight: bold;
+	color: #14a6b8;
+	vertical-align: middle;
+}
+
+/* Pagination Styles */
+.paging-area {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 5px 0;
+}
+
+#displayRange {
+	font-style: italic;
+	color: #43b8c6;
+}
+
+#previousPageButton,
+#nextPageButton {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	cursor: pointer;
+	background-color: #fff;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align: middle;
+}
+
+#previousPageButton {
+	background-image: url("/img/previous-btn.png");
+}
+
+#nextPageButton {
+	background-image: url("/img/next-btn.png");
+}
+
+/* Input & Select Styles */
+#itemsPerPageSelect,
+.table-search-area>input {
+	padding: 5px 10px;
+	font-size: 14px;
+	border: 1px solid #c6c9cc;
+	border-radius: 4px;
+	cursor: pointer;
+	outline: none;
+}
+
+#itemsPerPageSelect {
+	background-color: #fff;
+	appearance: none;
+}
+
+.table-search-area>input {
+	transition: border-color 0.2s;
+}
+
+.table-search-area>input:focus {
+	border-color: #14a6b8;
+}
+
+/* Pagination Number Container */
+#pageNumberContainer {
+	display: inline-block;
+	width: 180px;
+	text-align: center;
+}
+
+.page-link,
+.current-page {
+	display: inline-block;
+	width: 30px;
+	margin: 0 2px;
+	text-align: center;
+}
+
+/* User Detail */
+.detail-rank-img {
+	width: 25px;
+	height: 25px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+#detail-profile-img {
+	width: 120px;
+	height: 120px;
+	margin-right: 15px;
+}
+
+.detail-content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto auto auto auto;
+	gap: 20px;
+	margin: 10px;
+	padding: 15px;
+	font-size: 16px;
+	border: 1px solid #14a6b8;
+	border-radius: 6px;
+}
+
+.detail-content h2 {
+	grid-column: 1 / 3;
+	text-align: center;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	color: #333;
+	font-size: 24px;
+	border-bottom: 1px solid #14a6b8;
+}
+
+.basic-info-area,
+.contact-info-area,
+.account-info-area,
+.deletion-info-area {
+	padding: 13px;
+	border: 1px solid #d7f0f3;
+	border-radius: 5px;
+	background-color: #dff3f5;
+}
+
+.basic-info-area {
+	grid-column: 1;
+	grid-row: 2;
+	display: flex;
+	align-items: center;
+}
+
+.contact-info-area {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.account-info-area {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+.account-info-area ul li {
+	margin-bottom: 10px;
+}
+
+.deletion-info-area {
+	grid-column: 2;
+	grid-row: 3;
+}
+
+.button-area {
+	grid-column: 2;
+	grid-row: 4;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.detail-content ul,
+li {
+	margin: 0;
+	padding: 10px;
+	list-style-type: none;
+}
+
+.detail-content li:first-child {
+	margin-top: 40px;
+}
+
+.detail-content li {
+	margin-bottom: 20px;
+	font-size: 18px;
+}
+
+.detail-content strong {
+	font-weight: 600;
+	color: #43b8c6;
+}
+
+.button-area button {
+	background-color: #14a6b8;
+	font-size: 15px;
+	color: #ffffff;
+	width: 80px;
+	height: 30px;
+	padding: 6px;
+	margin: 5px 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+
+
+.button-area button:hover {
+	background-color: #0f8a90;
+}
+
+
+
+/* 탈퇴한 사용자에 대한 스타일 */
+.deleted-user,
+.deleted-user h2,
+.deleted-user li,
+.deleted-user strong {
+	color: #c64351 !important;
+}
+
+.deleted-user {
+	border: 1px solid #b81426 !important;
+}
+
+.deleted-user h2 {
+	border-bottom: 1px solid #b81426 !important;
+}
+
+.deleted-user .basic-info-area,
+.deleted-user .contact-info-area,
+.deleted-user .account-info-area,
+.deleted-user .deletion-info-area {
+	background-color: #ffe6e6 !important;
+	border-color: #f3d7da !important;
+}
+
+.deleted-user .button-area button {
+	background-color: #b81426 !important;
+}
+
+.deleted-user .button-area button:hover {
+	background-color: #93101e !important;
+}
+
+#custom-input-num {
+	width: 121px;
+}
+
+#custom-input-rank {
+	width: 91px;
+}
+
+/* 정지된 사용자에 대한 스타일 */
+.suspended-user h2,
+.suspended-user li,
+.suspended-user strong {
+	color: #b843c6 !important;
+}
+
+.suspended-user {
+	border: 1px solid #A614B8 !important;
+}
+
+.suspended-user h2 {
+	border-bottom: 1px solid #A614B8 !important;
+}
+
+.suspended-user .basic-info-area,
+.suspended-user .contact-info-area,
+.suspended-user .account-info-area,
+.suspended-user .deletion-info-area {
+	background-color: #f3dff5 !important;
+	border-color: #f0d7f3 !important;
+}
+
+.suspended-user .button-area button {
+	background-color: #A614B8 !important;
+}
+
+.suspended-user .button-area button:hover {
+	background-color: #851093 !important;
+}
+
+#custom-input-num {
+	width: 121px;
+}
+
+#custom-input-rank {
+	width: 91px;
+}
+
+/* 탈퇴 1년이 지난 사용자에 대한 스타일 */
+tr.old-withdrawn-user td {
+	background-color: #f5dfe1 !important;
+}
+
+tr.old-withdrawn-user button {
+	background-color: #b81426 !important;
+	color: white !important;
+}
+
+tbody tr.old-withdrawn-user:hover td {
+	filter: brightness(90%) !important;
+}
+
+/* 모달 스타일 */
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 30;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* Increased opacity for better overlay effect */
+}
+
+.modal-content {
+	background-color: #fefefe;
+	margin: 10vh auto;
+	padding: 2rem;
+	border: 1px solid #888;
+	width: 50%;
+	max-width: 600px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+	color: #aaaaaa;
+	float: right;
+	font-size: 24px;
+	font-weight: bold;
+	margin-left: 20px;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	transform: scale(1.1);
+}
+
+.modal-area {
+	display: flex;
+	flex-direction: column;
+	font-size: 18px;
+}
+
+.modal-area div {
+	padding: 5px 0 5px;
+}
+
+.modal-area h2 {
+	font-size: 22px;
+	margin-bottom: 1rem;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 0.5rem;
+}
+
+.modal-area label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+}
+
+.modal-area textarea {
+	width: 95%;
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 16px;
+	resize: vertical;
+	/* Allows vertical resizing of the textarea */
+}
+
+.modal-area textarea:focus,
+.modal-area select:focus {
+	border-color: #a614b8;
+	outline: none;
+	box-shadow: 0 0 5px rgba(166, 20, 184, 0.5);
+}
+
+.modal-area select {
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 16px;
+}
+
+.modal-area button {
+	background-color: #a614b8;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.modal-area button:hover {
+	background-color: #851093;
+}
+
+.button-align-right {
+	text-align: right;
+}
+
+.suspend-error {
+	font-size: 14px;
+	color: #b81426;
+}
+
+/* 회산님 것에 배선률 추가 */
+#info-display ,
+#edit-form {
+	width: 80%;
+}
+
+#nameUpdateInput {
+	text-align: center;
+	width: 300px;
+	height: 30px;
+	font-size: 20px;
+}
+
+#searchCategory, #searchInput {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px; 
+}
+
+#searchCategory:focus, #searchInput:focus {
+  border-color: #4A90E2; 
+}
+
+#searchInput {
+    width:170px; 
+    margin-left:10px; 
+}
+
+#userTable tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.search-form select, .search-form input[type="text"] {
+  padding: 10px;
+  font-size: 16px;  
+  border: 1px solid #ddd;
+  border-radius:5px;
+}
+
+.search-form button[type="submit"] {
+    padding:10px;
+    font-size:16px;
+    background-color:#4A90E2; 
+    color:white;
+    border:1px solid #ddd;
+    border-radius:5px; 
+    cursor:pointer; 
+}
+
+.search-form button[type="submit"]:hover{
+   background-color:#357AB7; 
+}
+
+#detail-profile-img {
+    border-radius: 50%;
+}

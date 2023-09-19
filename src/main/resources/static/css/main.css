@@ -1,0 +1,175 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+.container {
+    width: auto;
+}
+
+.content {
+    margin: 0 auto;
+    width: 1100px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.content div {
+    text-decoration: none;
+    color: black;
+}
+
+.content div:hover {
+    color: #0D766A;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+.content a {
+    text-decoration: none;
+    color: black;
+    text-decoration: underline;
+}
+
+.content a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* 광고 배너 스타일 */
+.ad-banner {
+    position: relative;
+    width: 1100px;
+    height: 250px;
+    overflow: hidden;
+    margin: 10px auto 15px;
+}
+
+.ad-banner .slide {
+    display: none;
+    width: 100%;
+}
+
+.ad-banner img {
+    width: 100%;
+}
+
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 3px 0 0 3px;
+    user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 0 3px 3px 0;
+}
+
+.prev:hover, .next:hover {
+    color: white;
+    background-color: #14B8A6;
+}
+
+/* 게시판 스타일 */
+.board-wrapper, .board-wrapper-2 {
+    display: flex;
+}
+#popular, #owner {
+    width: 350px;
+    margin-right: 20px;
+}
+#pet-plant-wrapper {
+    width: 687px;
+}
+#free-board {
+    width: 645px;
+} 
+.board {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #14B8A6;
+    border-radius: 5px;
+    vertical-align: middle;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+}
+.board:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.title-area {
+    display: flex;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #14B8A6;
+}
+.board-title {
+    font-size: 24px;
+    font-weight: bold;
+    padding-top: 15px;
+    margin: 5px 0;
+}
+#free-board > div h2 {
+    padding-top: 11px;
+}
+
+.title-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
+}
+
+.board-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.board-list li {
+    padding: 10px 0;
+}
+
+.board-list li:last-child {
+    border-bottom: none;
+}
+
+.board-item {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.board-item:hover {
+    text-decoration: underline;
+}
+.board-item .title {
+    flex: 2;
+}
+
+.board-item .author, .board-item .date {
+    flex: 1;
+}
+
+.owner-li {
+    margin: 10px 0;
+}
+
+.title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

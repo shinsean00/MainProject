@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/defaultLayout}">
+
+<head>
+	<title>반려친구 정보</title>
+</head>
+<th:block layout:fragment="css">
+	<link rel="stylesheet" th:href="@{/css/mypage.css}">
+	<style>
+		#curProfileImage {
+			width: 350px;
+			padding: 5px;
+		}
+		.pet-profile-btn-area {
+			display: flex;
+			justify-content: flex-end;
+		}
+		.update-btn {
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            background: linear-gradient(45deg, #14B8A6, #10a094);
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+		.update-btn:hover {
+            background: linear-gradient(45deg, #10a094, #0e8879); 
+        } 
+		.pet-profile-btn-area > button:first-child, .update-btn-area > button:first-child {
+			margin-right: 5px;
+		}
+		.update-btn-area {
+			width: 370px;
+			margin-top: 10px;
+			display: flex;
+			justify-content: flex-end;
+        }
+		.pet-info-area input {
+			font: 16px/24px "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", Sans-Serif;
+			border: none;
+			background: transparent;
+			outline: none;
+			padding: 0;
+		}
+		.pet-info-input-area.edit-mode input {
+			padding-left: 2px;
+			width: 136px;
+			height: 24px;
+			border: 1px solid #14B8A6;
+			border-radius: 5px;
+		}
+		.pet-info-title-area > div, .pet-info-input-area > div, .pet-info-input-area > input {
+			height: 26px;
+		}
+		.margin-added {
+			margin: 3px 0;
+		}
+	</style>
+</th:block>
+<th:block layout:fragment="script">
+	<script th:src="@{/js/pet/pet-info.js}"></script>
+	<script>
+		$(document).ready(function() {
+			$("#pet-update-btn").on("click", function() {
+				$("#adoptedAtUpdateTitle").addClass("margin-added");
+				$("#adoptedAtUpdateInput").addClass("margin-added");
+				$(".pet-info-area input").removeAttr("disabled");
+				$(".pet-info-input-area").addClass("edit-mode");
+				$("#update-actions").hide();
+				$("#complete-action").show();
+				$(".pet-profile-btn-area").show();
+			});
+		});
+	</script>
+</th:block>
+
+<div layout:fragment="content" class="container">
+	<!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/mypage :: mypageSidebar"></div>
+	<div class="content">
+		<div class="h2-wrapper"><h2>반려친구 상세보기</h2></div>
+		<div class="pet-list-item" th:data-pet-no="${pet.pet_no}">
+			<div class="pet-profile-area">
+				<img id="curProfileImage" class="profileImage" th:src="${pet.profile_picture}">
+				<input type="text" id="profileInput" th:value="${pet.profile_picture}" style="display: none;" disabled>
+				<div class="pet-profile-btn-area" style="display: none;">
+					<button type="button" id="editProfile" class="update-btn">프로필 사진 변경</button>
+					<button type="button" id="resetProfile" class="update-btn">초기화</button>
+				</div>
+			</div>
+			<div class="pet-info-area">
+				<div class="pet-info-title-area">
+					<div>이 름 :</div>
+					<div>나 이 :</div>
+					<div>생 일 :</div>
+					<div id="adoptedAtUpdateTitle">입양일 :</div>
+				</div>
+				<div class="pet-info-input-area">
+					<input type="hidden" id="petNo" name="pet_no" th:value="${pet.pet_no}" disabled>
+					<input type="text" id="nameUpdateInput" name="name" th:value="${pet.name}" disabled>
+					<div class="age" th:data-birth="${#dates.format(pet.birth, 'yyyy-MM-dd')}"></div>
+					<input type="date" id="birthUpdateInput" name="birth" th:value="${#dates.format(pet.birth,'yyyy-MM-dd')}" disabled><br>
+					<input type="date" id="adoptedAtUpdateInput" name="adopted_at" th:value="${#dates.format(pet.adopted_at,'yyyy-MM-dd')}" disabled>
+				</div>
+			</div>
+			<div class="update-btn-area" id="update-actions">
+				<button type="button" id="pet-update-btn" class="pet-update-btn">정보 수정하기</button>
+				<button type="button" class="pet-update-btn" onclick="submitDelete();">삭제</button>
+			</div>
+			<div class="update-btn-area" id="complete-action" style="display: none;">
+				<span id="updateError" class="error"></span>
+				<button type="button" id="pet-update-complete-btn" class="pet-update-btn" onclick="submitUpdates();">정보 수정 완료</button>
+			</div>
+		</div>
+	</div>
+</div>

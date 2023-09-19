@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>일정 내용 보기</title>
+</head> 
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <!--    <link rel="stylesheet" th:href="@{/css/page/home.css}" >-->
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!--    <script th:src="@{/js/page/home.js}"></script>-->
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">  
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+    <div class="content"></div>  
+    
+   <style> 
+        .button {
+            display: inline-block; 
+            padding: 5px 20px; 
+            background-color: #888888;
+            color: white; 
+            text-decoration: none; 
+            border: none;
+            cursor: pointer; 
+            border-radius: 5px; 
+            margin-top: 10px;
+        }
+ 
+        .form-container {
+            margin-top: 40px; /* 조절할 여유값을 설정하세요 */ 
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column; 
+            margin-bottom: 10px;
+        }
+ 
+        .date-range {
+            display: flex;
+            align-items: center;
+        }
+
+        .date-range input {
+            margin: 0 5px;
+        }
+        /* 폼 외부 컨테이너의 스타일 */
+    .info-container {
+        display: flex;
+        flex-direction: row; /* 수평 배열 */
+        margin-bottom: 20px; /* 간격 조절 */
+    }
+
+    .info-group {
+        display: flex;
+        flex-direction: column; /* 세로 배열 */
+        margin-right: 20px; /* 간격 조절 */
+    }
+
+    .info-label {
+        font-weight: bold;
+    }
+
+    .info-text { 
+        margin-top: 5px;    
+    } 
+     
+    </style>
+        
+    <div th:if="${event != null}">
+      
+    <div class="form-container"> 
+      
+    <label for="info-label">일정 정보</label>
+      
+    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center; font-size: 13px; margin-bottom: 10px; "> 
+    
+        <span class="styled-text" style="display: inline-block;">일정번호: </span>
+        <span th:text="${event.event_order}" class="styled-text" style="display: inline-block;"></span>
+         
+        <span class="styled-text" style="display: inline-block; margin-left: 10px;">작성일: </span>
+        <span th:text="${#dates.format(event.created_at, 'yyyy-MM-dd HH:mm')}" class="styled-text" style="display: inline-block;"></span>
+
+        <span class="styled-text" style="display: inline-block; margin-left: 10px;">수정일: </span>
+        <span th:text="${#dates.format(event.updated_at, 'yyyy-MM-dd HH:mm')}" class="styled-text" style="display: inline-block;"></span>
+          
+        
+         
+        </div>  
+    </div>    
+    
+        
+       
+        <div class="form-group"> 
+            <label for="title">제목</label>
+            <input type="text" th:id="${'title_' + event.event_num}" th:name="'title_' + ${event.event_num}" th:value="${event.title}" disabled class="styled-input" />
+        </div>
+  
+        <div class="form-group">
+    <label for="started_at">시작일/종료일</label> 
+    <div class="date-range">
+        <input type="text" th:id="${'started_at_' + event.event_num}" th:name="'started_at_' + ${event.event_num}" th:value="${#dates.format(event.started_at, 'yyyy-MM-dd HH:mm')}" disabled class="styled-input" />
+        <span class="date-separator">~</span>
+        <input type="text" th:id="${'ended_at_' + event.event_num}" th:name="'ended_at_' + ${event.event_num}" th:value="${#dates.format(event.ended_at, 'yyyy-MM-dd HH:mm')}" disabled class="styled-input" />
+    </div>
+</div>
+           
+  
+
+        <div class="form-group">
+            <label for="location">장소</label>
+            <input type="text" th:id="${'location_' + event.event_num}" th:name="'location_' + ${event.event_num}" th:value="${event.location}" disabled class="styled-input" />
+        </div>
+
+        <div class="form-group">
+            <label for="content">내용</label>
+            <input type="text" th:id="${'content_' + event.event_num}" th:name="'content_' + ${event.event_num}" th:value="${event.content}" disabled class="styled-input" />
+        </div>
+         
+        <a th:href="@{/event/deleteEvent(eventNum=${event.event_num})}" class="button">일정 삭제</a>
+        <a th:href="@{/event/editEventForm(eventNum=${event.event_num})}" class="button">일정 수정</a>
+    </div>     
+</div> 
+
+ 
+         
+    <div th:if="${event == null}"> 
+        <p>일정이 존재하지 않습니다.</p>  
+        
+     
+   
+   </div> 
+ 
+</div>   
+     
+  
+

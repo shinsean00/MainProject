@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}">
+
+<head>
+    <!-- 페이지의 제목 설정 -->
+    <title>정지된 회원</title>
+
+    <!-- 해당 페이지 고유 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/user-management.css}"/>
+    </th:block>
+
+    <!-- 해당 페이지 고유 스크립트 추가 -->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            window.users = /*[[${users}]]*/ [];
+        </script>
+        <script th:src="@{/js/user-management.js}"></script>
+        <script>
+            $(document).ready(function() {
+                // 정지 해제 버튼 
+                $('body').off('click', '.suspend_btn').on('click', '.suspend_btn', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 중단
+                    const row = $(this).closest('tr');
+                    const name = row.find('td:nth-child(3)').text();
+                    const userNum = row.find('td:nth-child(1)').text();
+                    const confirmationMessage = name + "님의 정지를 정말 해제하시겠습니까?";
+                    if (!window.confirm(confirmationMessage)) {
+                        return;
+                    }
+
+                    if (userNum) {
+                        $.ajax({
+                            url: "/api/suspend-user",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                userNum: userNum,
+                                action: 'unsuspend'
+                            }),
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    alert(name + "님의 계정이 정지 해제되었습니다.");
+                                    location.reload();
+                                } else {
+                                    console.error('Error unsuspending user:', response.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                alert("회원 정지 해제 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                            }
+                        });
+                    } else {
+                        console.error('userNum is not defined!');
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</head>
+
+<body data-page-type="suspendedUserManagement">
+    <!-- Content -->
+    <div layout:fragment="content" class="container">
+        <!-- sidebar fragment 사용 -->
+        <div th:replace="sidebar/privacy-admin :: userManagementSidebar"></div>
+        <div class="content">
+            <h2>정지 회원 관리</h2>
+            <table>
+                <div class="table-top-wrapper">
+                    <select id="itemsPerPageSelect">
+                        <option value="10">10개로 보기</option>
+                        <option value="25">25개로 보기</option>
+                        <option value="50">50개로 보기</option>
+                        <option value="100">100개로 보기</option>
+                    </select>
+                    <span>정지 회원 전체 리스트 : <span th:text="${users.size()}" style="color: #0d6a76;"></span>명</span></span>
+                    <div class="table-search-area">
+                        검색 : <input>
+                    </div>
+                </div>
+                <thead>
+                    <tr>
+                        <th>회원 번호 <button type="button" class="sort_btn"></button></th>
+                        <th>아이디 <button type="button" class="sort_btn"></button></th>
+                        <th>이름 <button type="button" class="sort_btn"></button></th>
+                        <th>정지일 <button type="button" class="sort_btn"></button></th>
+                        <th>정지 기한 <button type="button" class="sort_btn"></button></th>
+                        <th>정지 사유 <button type="button" class="sort_btn"></button></th>
+                        <th>정지 처리자 <button type="button" class="sort_btn"></button></th>
+                        <th>정지 관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.user_num}"></td>
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.name}"></td>
+                        <td th:text="${#dates.format(user.suspended_at, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${user.suspension_duration}"></td>
+                        <td th:text="${user.suspended_reason}"></td>
+                        <td th:text="${user.suspend_user_num}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="paging-area">
+                <div id="displayRange">
+                    <span id="">총 <b><span id="usersLength" th:text="${users.size()}"></b></span>개 항목 중 <b><span id="startRange">1</span></b> ~ <b><span id="endRange">10</span></b>번 항목까지 표시 중입니다.</span>
+                </div>
+                <div class="pagination">
+                    <button id="previousPageButton"></button>
+                    <!-- <span>페이지 : <span id="currentPageDisplay"></span> / <span id="totalPagesDisplay"></span></span> -->
+                    <span id="pageNumberContainer"></span>
+                    <button id="nextPageButton"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

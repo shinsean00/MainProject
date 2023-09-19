@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+   <script th:src="@{/js/main.js}"></script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <div class="content">
+        <div class="ad-banner">
+            <div class="slide" th:each="banner : ${banners}">
+                <img th:src="@{'/img/main/' + ${banner}}" alt="Banner Image" />
+            </div>
+            <a href="#" class="prev" onclick="moveSlide(-1)">&#10094;</a>
+            <a href="#" class="next" onclick="moveSlide(1)">&#10095;</a>
+        </div>
+        <div class="board-wrapper">
+            <!-- 인기 게시물 -->
+            <div class="board" id="popular">
+                <div class="title-area"><img th:src="@{/img/main/popularity.png}" class="title-icon" style="margin-right: 8px;"><h2 class="board-title">인기 게시글</h2></div>
+                <div class="board-list">
+                    <div class="board-item" th:each="board, iterStat : ${popularBoardList}" th:if="${iterStat.count <= 10}" th:data-postnum="${board.post_num}">
+                        <span class="title" th:text="${board.title}"></span>
+                        <span class="author" th:text="${board.author}"></span>
+                        <span class="date" th:text="${#dates.format(board.created_at, 'yyyy-MM-dd')}"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="pet-plant-wrapper">
+                <!-- 동물 게시판 -->
+                <div class="board">
+                    <div class="title-area"><img th:src="@{/img/main/pets.png}" class="title-icon"><h2 class="board-title">반려동물 게시판</h2></div>
+                    <div class="board-list">
+                        <div class="board-item" th:each="board, iterStat : ${petBoardList}" th:if="${iterStat.count <= 4}" th:data-postnum="${board.post_num}">
+                            <span class="title" th:text="${board.title}"></span>
+                            <span class="author" th:text="${board.author}"></span>
+                            <span class="date" th:text="${#dates.format(board.created_at, 'yyyy-MM-dd')}"></span>
+                        </div>
+                    </div>
+                    <a th:href="@{/board/petBoard}" class="more-link">더보기</a>
+                </div>
+                
+                <!-- 식물 게시판 -->
+                <div class="board">
+                    <div class="title-area"><img th:src="@{/img/main/plants.png}" class="title-icon"><h2 class="board-title">반려식물 게시판</h2></div>
+                    <div class="board-list">
+                        <div class="board-item" th:each="board, iterStat : ${plantBoardList}" th:if="${iterStat.count <= 4}" th:data-postnum="${board.post_num}">
+                            <span class="title" th:text="${board.title}"></span>
+                            <span class="author" th:text="${board.author}"></span>
+                            <span class="date" th:text="${#dates.format(board.created_at, 'yyyy-MM-dd')}"></span>
+                        </div>
+                    </div>
+                    <a th:href="@{/board/plantBoard}" class="more-link">더보기</a>
+                </div>
+            </div>
+        </div>
+        <div class="board-wrapper-2">
+            <!-- 이 달의 주인님 -->
+            <div class="board" id="owner">
+                <div class="title-area">
+                    <img th:src="@{/img/main/crown.png}" class="title-icon">
+                    <h2 class="board-title">이 달의 주인님</h2>
+                </div>
+                <div class="owner-li" th:each="owner, iterStat : ${topOwnerList}" th:if="${iterStat.count == 1}" >
+                    <div style="color: gold; font-weight: 700;">1등 : <span th:text="${owner.author}" ></span></div>
+                </div>
+                <div class="owner-li" th:each="owner, iterStat : ${topOwnerList}" th:if="${iterStat.count == 2}" >
+                    <div style="color: silver; font-weight: 650;">2등 : <span th:text="${owner.author}"></span></div>
+                </div>
+                <div class="owner-li" th:each="owner, iterStat : ${topOwnerList}" th:if="${iterStat.count == 3}" >
+                    <div  style="color: #cd7f32; font-weight: 600;">3등 : <span th:text="${owner.author}"></span></div>
+                </div>
+            </div>
+            <!-- 자유 게시판 -->
+            <div class="board" id="free-board">
+                <div class="title-area"><img th:src="@{/img/main/corkboard.png}" class="title-icon"><h2 class="board-title">자유 게시판</h2></div>
+                <ul class="board-list">
+                    <li><a href="#" style="font-size: 20px; font-style: italic; color: #69D1C6;">준비중입니다.</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</html>

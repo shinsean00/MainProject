@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<!--footerFragment 선언-->
+	<div th:fragment="footerFragment" class="footer-area">
+		<footer>
+			<ul class="footer-menu">
+				<li><a href="#">회사소개</a></li>
+				<li><a href="#">광고안내</a></li>
+				<li><a href="#">이용약관</a></li>
+				<li><a href="#">개인정보 처리 방침</a></li>
+			</ul>
+			<ul class="footer-info">
+				<li>
+					<a href="https://github.com/sango7199/Bootcamp-MainProject-Aniplant" target="_blank">
+						<img src="/img/github.png" alt="Github">
+					</a>
+					Github : Aniplant
+				</li>
+				<li>
+					<a href="https://awake-reaction-86b.notion.site/Boot-Camp-Main-Project-d8de2da1d3944e7fb36d0b580f79f12e?pvs=4" target="_blank">
+						<img src="/img/notion.png" alt="Notion">
+					</a>
+					Notion : 제작과정
+				</li>
+			</ul>
+			<ul class="team-info">
+				<li><img src="/img/sangboo3jo_logo.png" alt="상부3조" style="width:100px"></li>
+				<li>조장 : 조영준</li>
+				<li>조원 : 배선률 박정용 신서현 이규승 정회산</li>
+			</ul>
+			<div class="footer-copyright">
+				Copyright © 2023 멀티캠퍼스 풀스택 개발자 부트캠프 15기 상부삼조. All Rights Reserved.
+			</div>
+		</footer>
+	</div>
+</body>
+</html>

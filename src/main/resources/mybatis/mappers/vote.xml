@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.vote">
+    <resultMap id="voteResultMap" type="voteVO">
+		<result property="user_num" column="vote_num"/>
+        <result property="post_num" column="post_num"/>
+        <result property="vote_type" column="vote_type"/>
+
+    </resultMap>
+    
+  <select id="checkVoteDuplicate" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM TB_VOTE
+    WHERE user_num = #{user_num} AND post_num = #{post_num}
+ </select>
+ 
+ <!-- 투표 기록 삽입 -->
+    <insert id="insertVote" parameterType="voteVO">
+        INSERT INTO TB_VOTE (user_num, post_num, vote_type)
+        VALUES (#{user_num}, #{post_num}, #{vote_type})
+    </insert>
+
+    
+
+    
+    
+</mapper>

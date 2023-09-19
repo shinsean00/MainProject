@@ -1,0 +1,86 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version '2.7.15-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.mainproject'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '11'
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	// Spring Boot Starter Dependencies
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	
+	// Provided Runtime Dependency
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	
+
+	// MyBatis Dependencies
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
+
+	// AspectJ Dependency
+	implementation 'org.aspectj:aspectjrt:1.9.7'
+
+	// SLF4J and Log4J Dependencies
+	implementation 'org.slf4j:slf4j-api:1.7.32'
+	runtimeOnly 'org.slf4j:jcl-over-slf4j:1.7.32'
+	runtimeOnly 'org.slf4j:log4j-over-slf4j:1.7.32'
+
+	// Servlet API, JSP API and JSTL Dependencies
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+	implementation 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
+	implementation 'javax.servlet:jstl:1.2'
+
+	// JUnit Dependency
+	testImplementation 'junit:junit:4.13.2'
+
+	// Commons-beanutils, dbcp and cglib Dependencies
+	implementation 'commons-beanutils:commons-beanutils:1.9.4'
+	implementation 'org.apache.commons:commons-dbcp2:2.9.0'
+	implementation 'cglib:cglib:3.3.0'
+
+	// Oracle JDBC driver Dependency
+	// implementation files('/Users/san/Desktop/Programing/Bootcamp_MainProject/Aniplant/ojdbc6.jar')
+
+	// File Upload Dependencies
+	implementation 'commons-fileupload:commons-fileupload:1.4'
+	implementation 'commons-io:commons-io:2.11.0'
+
+	// Thymeleaf Dependency
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	
+	// MySQL Connector Dependency
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	
+	// JSON
+	implementation 'org.json:json:20210307'
+	
+	// Apache HTTPclient
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	
+	// event paging
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'  
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

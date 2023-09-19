@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.pet">
+	<resultMap id="petResultMap" type="petVO">
+		<result property="pet_no" column="pet_no" />
+		<result property="name" column="name" />
+		<result property="birth" column="birth" />
+		<result property="created_user_num" column="created_user_num" />
+		<result property="created_at" column="created_at" />
+		<result property="updated_user_num" column="updated_user_num" />
+		<result property="updated_at" column="updated_at" />
+		<result property="giver_user_num" column="giver_user_num" />
+		<result property="adopted_user_num" column="adopted_user_num" />
+		<result property="adopted_at" column="adopted_at" />
+		<result property="is_deleted" column="is_deleted" />
+		<result property="deleted_user_num" column="deleted_user_num" />
+		<result property="deleted_at" column="deleted_at" /> 
+		<result property="profile_picture" column="profile_picture" />
+		
+	</resultMap>
+
+	<insert id="registerPet" parameterType="petVO">
+		INSERT INTO TB_PET (pet_no, name, birth, created_user_num, created_at,
+		giver_user_num,
+		adopted_user_num, adopted_at, profile_picture)
+		VALUES (#{pet_no}, #{name}, #{birth}, #{created_user_num},
+		#{created_at}, #{giver_user_num},
+		#{adopted_user_num}, #{adopted_at}, #{profile_picture})
+	</insert>
+
+	<select id="getPetsByUserNum" parameterType="int" resultType="com.mainproject.pet.vo.PetVO">
+		SELECT * FROM TB_PET WHERE adopted_user_num = #{userNum} AND is_deleted = 0
+	</select>
+
+	<select id="getAllPet" resultType="PetVO">
+		SELECT p.*, u.id as owner_name
+		FROM TB_PET p
+		INNER JOIN TB_USER u ON p.adopted_user_num = u.user_num
+		WHERE p.is_deleted = 0
+	</select>
+
+	<select id="searchPet" resultType="PetVO"> SELECT p.*, u.id as
+		owner_name FROM TB_PET p INNER JOIN TB_USER u ON p.adopted_user_num =
+		u.user_num WHERE p.is_deleted = 0 AND <if test='category == "name"'>
+		p.name LIKE #{keyword}
+		</if>
+		<if test='category == "owner_name"'>
+		u.id LIKE#{keyword}
+		</if>
+	</select>
+
+
+	<select id="findByPetNo" parameterType="int"
+		resultType="com.mainproject.pet.vo.PetVO">
+		SELECT * FROM TB_PET WHERE pet_no = #{petNo}
+	</select>
+
+	<update id="updatePet" parameterType="petVO">
+		UPDATE TB_PET SET
+		name = #{name},
+		birth = #{birth},
+		adopted_at = #{adopted_at},
+		adopted_user_num = CASE WHEN #{adopted_user_num} = 0 THEN
+		adopted_user_num ELSE #{adopted_user_num} END,
+		updated_user_num = #{updated_user_num},
+		updated_at = #{updated_at}
+		WHERE pet_no = #{pet_no}
+	</update>
+
+
+	<update id="updatePetProfile" parameterType="Map">
+		UPDATE TB_PET
+		SET profile_picture = #{filePath}
+		WHERE Pet_No = #{petNo}
+	</update>
+
+	<update id="deletePet" parameterType="petVO">
+		UPDATE TB_PET SET
+		is_deleted = #{is_deleted},
+		deleted_user_num = #{deleted_user_num},
+		deleted_at = #{deleted_at}
+		WHERE pet_no = #{pet_no}
+	</update>
+</mapper> 

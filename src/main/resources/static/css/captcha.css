@@ -1,0 +1,116 @@
+/* 기본 스타일 */
+#captchaError {
+    color: red;
+    font-size: 13px;
+    margin: 0px;
+    padding: 3px 0px 3px;
+    align-self: flex-start;
+}
+
+/* CAPTCHA 영역 */
+#captchaProtection {
+    border: 2px solid red;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 330px;
+    padding: 10px;
+    margin: 5px 0px 15px;
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.captcha-message p {
+    margin: 0px;
+    padding: 5px 0px;
+    align-self: flex-start;
+}
+#captcha-message1 {
+    font-size: 16px;
+    font-weight: bold;
+}
+#captcha-message2 {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#captchaProtection.captcha-success {
+    border-color: #4CAF50;
+}
+
+#captchaImage {
+    width: 330px;
+}
+
+.captcha-container {
+    width: 330px;
+    height: 45px;
+    padding: 5px 0px 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.captcha-area {
+    position: relative;
+    display: inline-block;
+}
+
+.input-img {
+    width: 25px;
+    height: 25px;
+}
+
+.captcha-area img.input-img {
+    position: absolute;
+    left: 6px;
+    top: 51%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+#captchaInput {
+    border: 1px solid red;
+    border-radius: 4px;
+    width: 200px; 
+    padding: 10px 10px 10px 35px;
+    /* margin-bottom: 15px; */
+    font-size: 16px;
+    position: relative;
+    z-index: 1;
+}
+#captchaInput.captcha-success {
+    border-color: #4CAF50;
+}
+
+#captchaInput:focus {
+    border-color: #14b8a6;
+    outline: none;
+}
+
+/* CAPTCHA 버튼 */
+#captchaRefresh_btn {
+    background-image: url("/img/captcha-refresh.png");
+}
+
+#captchaCheck_btn {
+    background-image: url("/img/captcha-check.png");
+}
+
+.captcha-btn {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #14b8a6;
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.captcha-btn:hover {
+    background-color: #128f89;
+  }
+

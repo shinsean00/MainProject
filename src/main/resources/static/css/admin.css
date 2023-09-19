@@ -1,0 +1,22 @@
+.h2-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 8px;
+    margin: 0 0 15px;
+    border-bottom: 1px solid #14a6b8;
+}
+.h2-wrapper > h2 {
+    padding: 0;
+    margin: 0;
+}
+h3 {
+    margin: 0;
+}
+
+.categoty-head {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}

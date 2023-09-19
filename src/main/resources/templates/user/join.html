@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>애니플랜트 : 회원가입</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" th:href="@{/css/join.css}">
+</head>
+<body>
+    <h1 class="logo_aniplant">
+        <a href="/index.do" class="link"></a>
+        <span class="blind">애니플랜트</span>
+    </h1>
+    <div class="content">
+        <form id="join_form" name="join_form" method="post" action="">
+            <div class="id-password-group"> <!-- 아이디와 비밀번호 묶는 div -->
+                <div class="input-area">
+                    <div class="input-btn-container">
+                        <input type="text" id="idInput" name="id" placeholder="아이디">
+                        <button type="button" id="checkId" class="check_btn">중복 확인</button>
+                    </div>
+                    <div id="idError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <input type="password" id="passwordInput" name="password" placeholder="비밀번호">
+                    <div id="passwordError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <input type="password" id="passwordConfirmInput" name="password_confirm" placeholder="비밀번호 확인">
+                    <div id="passwordConfirmError" class="joinError"></div>
+                    <div id="passwordCheckError" class="joinError"></div>
+                </div>
+            </div>
+            <div class="additional-inputs-group"> <!-- 나머지 input들 묶는 div -->
+                <div class="input-area">
+                    <input type="email" id="emailInput" name="email" placeholder="[선택] 비밀번호 분실 시 확인용 이메일">
+                    <div id="emailError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <div class="input-btn-container">
+                        <input type="text" id="nicknameInput" name="nickname" placeholder="닉네임" maxlength="10">
+                        <button type="button" id="checkNickname" class="check_btn">중복 확인</button>
+                    </div>
+                    <div id="nicknameError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="nameInput" name="name" placeholder="이름" maxlength="8">
+                    <div id="nameError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <input type="date" id="birthInput" name="birth" placeholder="생년월일 8자리" maxlength="10">
+                    <div id="birthError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <input type="tel" id="telInput" name="tel" placeholder="'-'를 포함한 휴대전화번호">
+                    <div id="telError" class="joinError"></div>
+                </div>
+                <div class="input-area">
+                    <ul class="gender_list">
+                        <li><input type="radio" id="genderIdentity1" name="gender" value="M"><label for="genderIdentity1">남자</label></li>
+                        <li><input type="radio" id="genderIdentity2" name="gender" value="F"><label for="genderIdentity2">여자</label></li>
+                    </ul>
+                    <div id="genderError" class="joinError"></div>
+                </div>
+            </div>
+            <button type="button" id="join_btn" class="btn_submit">회원가입</button>
+        </form>
+    </div>
+</body>
+<script>
+    var isIdChecked = false;
+    var isNicknameChecked = false;
+    
+    // 아이디 중복 확인 로직
+    $("#checkId").click(function() {
+        var id = $("#idInput").val();
+        if (!id) {
+            $("#idError").text("아이디를 입력해주세요.");
+            return;
+        }
+        $.ajax({
+            url: "/api/check-id",
+            type: "POST",
+            data: { id: id },
+            success: function(response) {
+                if (response.isDuplicate) {
+                    $("#idError").text("이미 사용중인 아이디입니다.");
+                } else {
+                    $("#idError").text("사용 가능한 아이디입니다.");
+                    isIdChecked = true;
+                    console.log(response.isDuplicate);
+                }
+            }
+        });
+    });
+    $("#idInput").change(function() {
+        isIdChecked = false;
+        $("#idError").text("");
+    });
+    
+    // 닉네임 중복 확인 로직
+    $("#checkNickname").click(function() {
+        var nickname = $("#nicknameInput").val();
+        if (!nickname) {
+            $("#nicknameError").text("닉네임을 입력해주세요.");
+            return;
+        }
+        $.ajax({
+            url: "/api/check-nickname",
+            type: "POST",
+            data: { nickname: nickname },
+            success: function(response) {
+                if (response.isDuplicate) {
+                    $("#nicknameError").text("이미 사용중인 닉네임입니다.");
+                } else {
+                    $("#nicknameError").text("사용 가능한 닉네임입니다.");
+                    isNicknameChecked = true;
+                    console.log(response.isDuplicate);
+                }
+            }
+        });
+    });
+    $("#nicknameInput").change(function() {
+        isNicknameChecked = false;
+        $("#nicknameError").text("");
+    });
+    
+    // JS(jQuery)를 사용하여 form 데이터를 AJAX post 요청으로 회원가입 데이터 전송하는 로직
+    $(document).ready(function() {
+        $("#join_btn").click(function() {
+        	var isValid = true // 유효성 검사
+        	
+            // 아이디,닉네임 중복 체크
+            if (!isIdChecked) {
+                $("#idError").text("아이디 중복 확인을 해주세요.");
+                isValid = false;  
+            } else {
+                $("#idError").text("");
+            }
+        	
+            if (!isNicknameChecked) {
+                $("#nicknameError").text("닉네임 중복 확인을 해주세요.");
+                isValid = false;
+            } else {
+                $("#passwordError").text("");
+            }
+            
+            // 전화번호 세 자리로 구분하는 로직
+            var telPattern = /^[0-9]{3}-[0-9]{4}-[0-9]{4}$/;
+            var telInput = $("#telInput").val();
+            var telParts = telInput.split("-");
+
+            // 필수 입력 필드 체크 로직
+            var id = $("#idInput").val();
+            var pwd = $("#passwordInput").val();
+            var pwd_confirm = $("#passwordConfirmInput").val();
+            var email = $("#emailInput").val();
+            var nickname = $("#nicknameInput").val();
+            var name = $("#nameInput").val();
+            var birth = $("#birthInput").val();
+            var country_code = telParts[0];
+            var first_hp = telParts[1] ;
+            var second_hp = telParts[2];
+            var gender = $("input[name='gender']:checked").val();
+            
+            // 필수 입력창이 비어있다면 오류 메시지를 표시
+            if (!id) {
+                $("#idError").text("아이디를 입력해주세요.");
+                isValid = false;
+            } else {
+                $("#idError").text("");
+            }
+
+            if (!pwd) {
+                $("#passwordError").text("비밀번호를 입력해주세요.");
+                isValid = false;
+            } else {
+                var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+                if (!passwordPattern.test(pwd)) {
+                    $("#passwordError").text("비밀번호는 최소 10자리 이며, 영문 대소문자, 숫자, 특수문자를 포함해야 합니다.");
+                    isValid = false;
+                } else {
+                    $("#passwordError").text("");
+                }
+            }
+
+            if (!pwd_confirm) {
+                $("#passwordConfirmError").text("비밀번호 확인을 입력해주세요.");
+                isValid = false;
+            } else {
+                $("#passwordConfirmError").text("");
+            }
+
+            if (pwd !== pwd_confirm) { // 비밀번호 일치 확인
+                $("#passwordCheckError").text("비밀번호가 일치하지 않습니다.");
+                isValid = false;
+            } else {
+                $("#passwordCheckError").text("");
+            }
+
+            if (email) {
+                var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                if (!emailPattern.test(email)) {
+                    $("#emailError").text("유효한 이메일 형식이 아닙니다.");
+                    isValid = false;
+                } else {
+                    $("#emailError").text("");
+                }
+            }
+
+            if (!nickname) {
+                $("#nicknameError").text("닉네임을 입력해주세요.");
+                isValid = false;
+            } else {
+                $("#nicknameError").text("");
+            }
+
+            if (!name) {
+                $("#nameError").text("이름을 입력해주세요.");
+                isValid = false;
+            } else {
+                $("#nameError").text("");
+            }
+
+            if (!birth) {
+                $("#birthError").text("생년월일을 입력해주세요.");
+                isValid = false;
+            } else {
+                $("#birthError").text("");
+            }
+			
+            if (!telInput) {
+                $("#telError").text("전화번호를 입력해주세요.");
+                isValid = false;
+            } else if (!telPattern.test(telInput)) {
+                $("#telError").text("유효한 전화번호 형식이 아닙니다.");
+                isValid = false;
+            } else {
+                $("#telError").text("");
+            }
+
+            if (!gender) { 
+                $("#genderError").text("성별을 선택해 주세요.");
+                isValid = false;
+            } else {
+                $("#genderError").text("");
+            }
+            
+            if (!isValid) {  // 유효성 검사에 실패하면 함수를 빠져나옴
+                return;
+            }
+            
+            var date = new Date();
+            date.setHours(date.getHours() + 9); // 한국은 UTC로부터 +9시간이므로 9를 더함
+            var timestamp = date.toISOString();
+            var created_at = timestamp
+            
+			var is_admin = "USER";
+            var profile_picture;
+            if (gender == "M") {
+                profile_picture = "/img/profile-default-m.png";
+            } else { profile_picture = "/img/profile-default-w.png"; }
+            
+            var formData = {
+                id: id,
+                pwd: pwd,
+                email: email,
+                nickname: nickname,
+                name: name,
+                birth: birth,
+                country_code: telParts[0],
+                first_hp: telParts[1] ,
+                second_hp: telParts[2],
+                gender: gender,
+                created_at: created_at,
+                is_admin: is_admin,
+                profile_picture: profile_picture
+            };
+			
+           // console.log(formData);
+            
+         	// AJAX 회원가입 post 요청 로직
+            $(this).prop("disabled", true);  // 회원가입 버튼 비활성화
+            $.ajax({
+                url: "/api/register-user",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    window.location.href = "join-complete.do?name=" + encodeURIComponent(name);
+                },
+                error: function(xhr, status, error) {
+                    alert("회원가입 중 오류가 발생했습니다.");
+                },
+                complete: function() {
+                  $("#join_btn").prop("disabled", false);  // 회원가입 버튼 활성화
+                }
+            });
+        });
+    });
+</script>
+</html>

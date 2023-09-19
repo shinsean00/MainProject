@@ -1,0 +1,132 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1000px;
+}
+
+.content {
+    padding: 20px;
+    background-color: #fff;
+}
+
+h2 {
+    margin: 5px 0px 10px 10px;
+}
+
+#editCropperImage {
+    display: block;
+    max-width: 100%;
+    max-height: 530px;
+    margin-bottom: 20px;
+}
+
+#cropper-area {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 1px solid #69d1c6;
+    border-radius: 7px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+#cropper-edit-area {
+    width: 65%;
+    padding-right: 20px;
+    margin: 10px;
+    overflow: hidden;
+}
+
+#cropper-setting-area {
+    width: 35%;
+    margin: 10px;
+}
+
+#profileImageInput {
+    display: none;
+    margin-top: 10px;
+}
+
+.label-file-input {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: #43c6b8;
+    color: #ffffff;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    width: 273px;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+.label-file-input:hover {
+    background-color: #14b8a6;
+}
+
+.label-file-input img {
+    vertical-align: middle;
+    margin-right: 7px;
+    margin-bottom: 2px;
+    width: 20px; 
+    height: 20px;
+}
+
+.profileImagePreview {
+    max-width: 100%;
+    display: block;
+    margin: 30px 20px;
+    border: 1px solid #69d1c6;
+}
+
+.cropper-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background-color: #14b8a6;
+    background-size: 80%; 
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-color 0.2s;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+.cropper-btn:hover {
+    background-color: #109385;
+}
+
+.cropper-btn-group1, .cropper-btn-group2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.cropper-btn-group1 {
+    margin-bottom: 25px;
+}
+
+.cropper-btn-group2 > .cropper-btn img {
+    width: 35px;
+    height: 35px;
+    vertical-align: middle;
+    margin-right: 7px;
+    margin-bottom: 2px;
+}
+
+.cropper-btn-group2 > .cropper-btn {
+    width: 140px;
+    height: 45px;
+    background-color: #109385;
+    text-indent: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.cropper-btn-group2 > .cropper-btn:hover {
+    background-color: #0d766a;
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/user-management.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="detail-content" th:classappend="${user.is_deleted} ? 'deleted-user' : (${user.is_suspended} ? 'suspended-user' : '')">
+        <h2 th:text="${user.name + '님의 회원 정보'}">User Information</h2>
+        <div class="basic-info-area">
+            <div><img id="detail-profile-img" th:src="@{${user.profile_picture}}"></div>
+            <div>
+                <li><strong>회원 번호 : </strong> <input type="text" id="custom-input-num" th:value="${user.user_num}" disabled></li>
+                <li>
+                    <strong>회원 등급 : </strong> <img class="detail-rank-img" th:src="${user.rank.imagePath}">
+                    <select id="custom-input-rank">
+                        <option value="EGG" th:selected="${user.rank.name() == 'EGG'}">EGG</option>
+                        <option value="HATCHING_CHICK" th:selected="${user.rank.name() == 'HATCHING_CHICK'}">HATCHING_CHICK</option>
+                        <option value="CHICK" th:selected="${user.rank.name() == 'CHICK'}">CHICK</option>
+                        <option value="CHICKEN" th:selected="${user.rank.name() == 'CHICKEN'}">CHICKEN</option>
+                        <option value="FRIED_CHICKEN" th:selected="${user.rank.name() == 'FRIED_CHICKEN'}">FRIED_CHICKEN</option>
+                        <option value="ADMIN" th:selected="${user.rank.name() == 'ADMIN'}">ADMIN</option>
+                        <option value="PRIVACY_ADMIN" th:selected="${user.rank.name() == 'PRIVACY_ADMIN'}">PRIVACY_ADMIN</option>
+                    </select>
+                </li>
+                <li><strong>닉네임 : </strong> <input type="text" id="custom-input-nickname" th:value="${user.nickname}"></li>
+            </div>
+        </div>
+        <div class="contact-info-area">
+            <ul>
+                <li><strong>아이디 : </strong> <input type="text" id="custom-input-id" th:value="${user.id}" disabled></li>
+                <li><strong>이름 : </strong> <input type="text" id="custom-input-name" th:value="${user.name}" ></li>
+                <li><strong>생년월일 : </strong> <input type="text" id="custom-input-birth" th:value="${#dates.format(user.birth, 'yyyy-MM-dd')}"></li>
+                <li>
+                    <strong>성별 : </strong> 
+                    <select id="custom-input-gender">
+                        <option value="M" th:selected="${user.gender == 'M'}">남성</option>
+                        <option value="F" th:selected="${user.gender == 'F'}">여성</option>
+                    </select>
+                </li>
+                <li><strong>이메일 : </strong> <input type="text" id="custom-input-email" th:value="${user.email}"></li>
+                <li><strong>전화번호 : </strong> <input type="text" id="custom-input-tel" th:value="${user.country_code + '-' + user.first_hp + '-' + user.second_hp}"></li>
+            </ul>
+        </div>
+        <div class="account-info-area">
+            <ul>
+                <li><strong>회원가입일 : </strong> <input type="text" id="custom-input-created_at" th:value="${#dates.format(user.created_at, 'yyyy-MM-dd HH:mm:ss')}" disabled></li>
+                <li><strong>현재 로그인 실패 횟수 : </strong> <input type="text" id="custom-input-fail_cont" th:value="${user.fail_count}"></li>
+                <li><strong>회원 정보 수정자 : </strong> <input type="text" id="custom-input-updated_user_num" th:value="${user.updated_user_num}" disabled></li>
+                <li><strong>회원 정보 수정일 : </strong> <input type="text" id="custom-input-updated_at" th:value="${#dates.format(user.updated_at, 'yyyy-MM-dd HH:mm:ss')}" disabled></li>
+            </ul>
+        </div>
+        <div class="deletion-info-area">
+            <ul>
+                <li>
+                    <strong>회원 정지 여부 : </strong> 
+                    <select id="custom-input-is_suspended">
+                        <option value="true" th:selected="${user.is_suspended == true}">true</option>
+                        <option value="false" th:selected="${user.is_suspended == false}">false</option>
+                    </select>
+                </li>
+                <li>
+                    <strong>회원 탈퇴 여부 : </strong> 
+                    <select id="custom-input-is_deleted">
+                        <option value="true" th:selected="${user.is_deleted == true}">true</option>
+                        <option value="false" th:selected="${user.is_deleted == false}">false</option>
+                    </select>
+                </li>
+                <li><strong>회원 탈퇴 처리자 : </strong> <input type="text" id="custom-input-deleted_user_num" th:value="${user.deleted_user_num}" disabled></li>
+                <li><strong>회원 탈퇴일 : </strong> <input type="text" id="custom-input-is_deleted_at" th:value="${#dates.format(user.deleted_at, 'yyyy-MM-dd HH:mm:ss')}" disabled></li>
+                <li><strong>회원 탈퇴 이유 : </strong> <input type="text" id="custom-input-deleted_reason" th:value="${user.deleted_reason}"></li>
+            </ul>
+        </div>
+        <div class="button-area">
+            <button id="update_complete-btn">수정 완료</button>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        function isValidEmail(email) { // 이메일 패턴
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailPattern.test(email);
+        }
+
+        function isValidPhoneNumber(phoneNumber) { // 전화번호 패턴
+            const phonePattern = /^[0-9]{3}-[0-9]{4}-[0-9]{4}$/;
+            return phonePattern.test(phoneNumber);
+        }
+
+        $('#update_complete-btn').on('click', function() {
+            // 이메일 유효성 검사
+            const emailValue = $('#custom-input-email').val().trim();
+
+            // 입력된 이메일 값이 있을 때만 유효성 검사
+            if (emailValue && !isValidEmail(emailValue)) {
+                alert("올바른 이메일 형식이 아닙니다.");
+                $('#custom-input-email').focus();
+                return;
+            }
+
+            // 전화번호 유효성 검사
+            if (!isValidPhoneNumber($('#custom-input-tel').val())) {
+                alert("올바른 전화번호 형식이 아닙니다.");
+                $('#custom-input-tel').focus();
+                return;
+            }
+
+            // 필수 값들 유효성 검사
+            const requiredFields = [
+                { selector: '#custom-input-rank', name: '회원 등급' },
+                { selector: '#custom-input-nickname', name: '닉네임' },
+                { selector: '#custom-input-name', name: '이름' },
+                { selector: '#custom-input-birth', name: '생년월일' },
+                { selector: '#custom-input-gender', name: '성별' },
+                { selector: '#custom-input-tel', name: '전화번호' }
+            ];
+            for (let field of requiredFields) {
+                if (!$(field.selector).val().trim()) {
+                    alert(`${field.name}은(는) 필수 입력 항목입니다.`);
+                    $(field.selector).focus();
+                    return;
+                }
+            }
+            
+            // 전화번호 나누기
+            var tel = $('#custom-input-tel').val().split("-");
+
+            // 날짜 timestamp 형식으로 맞춰주기
+            var customBirth = $('#custom-input-birth').val() + "T00:00:00";
+            var customCreatedAt = $('#custom-input-created_at').val().replace(" ", "T");
+            var customDeletedAt = $('#custom-input-is_deleted_at').val().replace(" ", "T");
+            
+            // ajax로 전송할 Data
+            var userData = {
+                user_num: $('#custom-input-num').val(),
+                id: $('#custom-input-id').val(),
+                name: $('#custom-input-name').val(),
+                nickname: $('#custom-input-nickname').val(),
+                email: $('#custom-input-email').val(),
+                birth: customBirth,
+                country_code: tel[0],
+                first_hp: tel[1],
+                second_hp: tel[2],
+                gender: $('#custom-input-gender').val(),
+                created_at: customCreatedAt,
+                updated_user_num: $('#updated_user_num').text(),
+                is_deleted: $('#custom-input-is_deleted').val(),
+                deleted_user_num: $('#custom-input-deleted_user_num').val(),
+                deleted_at: customDeletedAt,
+                deleted_reason: $('#custom-input-deleted_reason').val(),
+                fail_count: $('#custom-input-fail_count').val(),
+                rank: $('#custom-input-rank').val(),
+                is_suspended: $('#custom-input-is_suspended').val()
+            };
+            // Data가 비어있다면 null로 바꿔주기
+            for (let key in userData) {
+                if (userData[key] === "" || userData[key] === undefined) {
+                    userData[key] = null;
+                }
+            }
+            
+            // ajax 회원정보 수정 post 요청 로직
+            $.ajax({
+                url: '/api/update-userDetail',
+                type: 'POST',
+                data: JSON.stringify(userData),
+                contentType: 'application/json',
+                success: function(response) {
+                    alert("회원 정보 수정이 완료되었습니다!");
+                    location.reload();
+                },
+                error: function(error) {
+                    console.error("AJAX 요청 실패:", error);
+                    alert("회원 정보 수정 중 오류가 발생하였습니다.");
+                }
+            });
+        });
+    });
+</script>
+
+</html>

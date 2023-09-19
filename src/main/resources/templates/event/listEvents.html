@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+      
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <style>
+        .container {
+            width: 1120px;
+        }
+        .content {
+            width: 910px;
+        }
+        #event-list-area > table {
+            border-collapse: collapse;
+            width: 797px;
+            margin: 10px;
+        }  
+        th, td { 
+            border: 1px solid black;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* 캘린더 */
+        #calendar-area {
+            width: 550px;
+            height: auto;
+            padding: 5px;
+            margin: 5px;
+        }
+        #calendar {
+            max-width: px;
+            margin: 0 auto;
+        }
+        .fc-daygrid-day-top .fc-daygrid-day-number {
+            padding: 0px 4px;
+        }
+        .fc .fc-button {
+            line-height: 0;
+            font-weight: 500;
+        }
+        .fc .fc-button-primary {
+            background-color: #14b8a6;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .fc .fc-button-primary:hover {
+            background-color: #0d766a;
+        }
+        td { 
+            font-size: 13px;
+        }
+        .fc-event {
+            transition: background-color 0.3s;
+            transition: border-color 0.3s;
+            background-color: transparent;
+            border: none;
+            color: black;
+        }
+        .fc-event:hover {
+            background-color: rgba(128, 128, 128, 0.1); 
+            border: none;
+            color: black;
+        }
+        .fc-daygrid-dot-event {
+            align-items: center;
+            display: flex;
+            padding: 2px 0px;
+        }
+        .fc ::after, .fc ::before {
+            vertical-align: top;
+        }
+        .fc-event-title-container {
+            background-color: #14b8a6;
+            border-radius: 3px;
+        }
+        .fc-event-title-container:hover {
+            opacity: 0.7;
+        }
+        .fc-daygrid-event-dot {
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .fc-event-title {
+            margin-left: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 툴팁 */
+        .popper,
+        .tooltip {
+            position: absolute;
+            z-index: 9999;
+            background: #d7f3f0;
+            color: black;
+            width: 150px;
+            border-radius: 3px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+            padding: 10px;
+            text-align: center;
+        }
+        .style5 .tooltip {
+            background: #1E252B;
+            color: #FFFFFF;
+            max-width: 200px;
+            width: auto;
+            font-size: .8rem;
+            padding: .5em 1em;
+        }
+        .popper .popper__arrow,
+        .tooltip .tooltip-arrow {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            position: absolute;
+            margin: 5px;
+        }
+
+        .tooltip .tooltip-arrow,
+        .popper .popper__arrow {
+            border-color: #d7f3f0;
+        }
+        .style5 .tooltip .tooltip-arrow {
+            border-color: #1E252B;
+        }
+        .popper[x-placement^="top"],
+        .tooltip[x-placement^="top"] {
+            margin-bottom: 5px;
+        }
+        .popper[x-placement^="top"] .popper__arrow,
+        .tooltip[x-placement^="top"] .tooltip-arrow {
+            border-width: 5px 5px 0 5px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            bottom: -5px;
+            left: calc(50% - 5px);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .popper[x-placement^="bottom"],
+        .tooltip[x-placement^="bottom"] {
+            margin-top: 5px;
+        }
+        .tooltip[x-placement^="bottom"] .tooltip-arrow,
+        .popper[x-placement^="bottom"] .popper__arrow {
+            border-width: 0 5px 5px 5px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            top: -5px;
+            left: calc(50% - 5px);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .tooltip[x-placement^="right"],
+        .popper[x-placement^="right"] {
+            margin-left: 5px;
+        }
+        .popper[x-placement^="right"] .popper__arrow,
+        .tooltip[x-placement^="right"] .tooltip-arrow {
+            border-width: 5px 5px 5px 0;
+            border-left-color: transparent;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            left: -5px;
+            top: calc(50% - 5px);
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .popper[x-placement^="left"],
+        .tooltip[x-placement^="left"] {
+            margin-right: 5px;
+        }
+        .popper[x-placement^="left"] .popper__arrow,
+        .tooltip[x-placement^="left"] .tooltip-arrow {
+            border-width: 5px 0 5px 5px;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            right: -5px;
+            top: calc(50% - 5px);
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .area-wrapper {
+            display: flex;
+            justify-content: space-between;
+        }
+        .event-list {
+            margin-left: 5px;
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 7px;
+            width: 330px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .event-list:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.13); 
+        }
+        .event-head {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            border-bottom: 1px solid #B2E7E1;
+        }
+        .event-date, .event-title, .event-content, .event-location, .event-time {
+            margin-right: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .event-date {
+            font-weight: bold;
+        }
+        .event-details {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        /* 일정 등록 */
+        .modal-content {
+            width: 400px;
+        }
+        #datetime-area {
+            display: flex;
+        }
+        #allday-area, #datetime-area {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        #allday-area {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .allday-toggle {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .allday-toggle input {
+            display: none;
+        }
+        .allday-toggle label {
+            display: block;
+            width: 48px;
+            height: 24px;
+            text-indent: -250%;
+            user-select: none;
+        }
+        .allday-toggle label::before,
+        .allday-toggle label::after {
+            content: "";
+            display: block;
+            position: absolute;
+            cursor: pointer;
+        }
+        .allday-toggle label::before {
+            width: 100%;
+            height: 85%;
+            background-color: #dedede;
+            border-radius: 1em;
+            transition: background-color 0.25s ease;
+            top: 2px;
+            bottom: 2px;
+        }
+        .allday-toggle label::after {
+            top: 4px;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.45);
+            transition: left 0.25s ease;
+        }
+        .allday-toggle input:checked + label::before {
+            background-color: #D7F3F0;
+        }
+        .allday-toggle input:checked + label::after {
+            left: 24px;
+        }
+        .event-form-wrapper {
+            display: flex;
+            flex-direction: column; 
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .event-form-wrapper > div:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 5px;
+        }
+        input[type="text"] {
+            font-size: 16px;
+            width: 370px;
+            border: none;
+            outline: none;
+            padding: 8px;
+        }
+        input[type="date"], input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="date"]:focus, input[type="time"]:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 5px rgba(20, 184, 166, 0.5);
+        }
+        #start_date, #end_date {
+            margin-top: 3px;
+        }
+        #time-inputs {
+            padding-top: 27px;
+            padding-left: 12px;
+            display: block;
+        }
+        #time-inputs div:nth-child(2) {
+            padding-top: 28px;
+        }
+        #start_time, #end_time {
+            height: 36px;
+        }
+        #register-btn-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #registerError {
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</th:block>
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src='fullcalendar/core/locales/es.global.js'></script>
+    <script src='https://unpkg.com/popper.js/dist/umd/popper.min.js'></script>
+    <script src='https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js'></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var eventsFromServer = /*[[${eventsList}]]*/ [];
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/mypage.js}"></script>
+    <script>
+        // 일정 등록 하루종일 checkbox 함수
+        function toggleTimeInput(show) {
+            const timeInputs = document.getElementById('time-inputs');
+            if (show) {
+                timeInputs.style.display = "block";
+            } else {
+                timeInputs.style.display = "none";
+            }
+        }
+        
+        // 캘린더 년월에 맞게 해당 리스트 보여주는 함수
+        function updateEventList() {
+            let specifiedDate = $('#fc-dom-1').text().trim();
+            let yearMonth = specifiedDate.split("년 ");
+            let year = yearMonth[0];
+            let month = yearMonth[1].replace("월", "").trim();
+
+            if(month.length === 1) {
+                month = "0" + month;
+            }
+
+            let currentDate = year + "-" + month;
+
+            $('.event-list').each(function() {
+                let eventDate = $(this).find('#show-equal-event-list').text().trim();
+                if (eventDate !== currentDate) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        }
+        
+        $(document).ready(function() {
+            updateEventList();
+            // 캘린더 년월 추적하는 observer
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === "characterData" || mutation.type === "childList") {
+                        updateEventList();
+                    }
+                });
+            });
+            observer.observe($('#fc-dom-1')[0], {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+
+            // 일정 상세보기 로직
+            $('.event-list').on('click', function() {
+                const eventNum = $(this).data('event-num');
+                window.location.href = "/event/viewEventDetail.do?event_num=" + eventNum;
+            });
+
+            // 일정 등록 버튼 로직 
+            $('#event-modal-register-btn').on('click', function() {
+                const errorElement = $('#registerError');
+
+                // 유효성 검사
+                let title = $('#title').val();
+                let startDate = $('#start_date').val();
+                let endDate = $('#end_date').val();
+                let startTime = $('#start_time').val();
+                let endTime = $('#end_time').val();
+                let allDayChecked = $('#allday').prop('checked');
+
+                if (!title) {
+                    errorElement.text("제목을 입력해주세요.");
+                    return;
+                }
+                if (!startDate) {
+                    errorElement.text("시작일을 선택해주세요.");
+                    return;
+                }
+                if (!endDate) {
+                    errorElement.text("종료일을 선택해주세요.");
+                    return;
+                }
+                if (!allDayChecked && (!startTime || !endTime)) {
+                    errorElement.text("시작 시간과 종료 시간을 입력해주세요.");
+                    return;
+                }
+                // ended_at이 started_at보다 빠른지 확인하는 유효성 검사
+                let started_at_timestamp = new Date(startDate + (allDayChecked ? '' : ' ' + startTime)).getTime();
+                let ended_at_timestamp = new Date(endDate + (allDayChecked ? '' : ' ' + endTime)).getTime();
+
+                if (ended_at_timestamp < started_at_timestamp) {
+                    errorElement.text("종료일이 시작일보다 빠를 수 없습니다.");
+                    return;
+                }
+
+                // 유효성 검사를 통과하면 AJAX 요청
+                let formData = {
+                    title: title,
+                    allday: allDayChecked,
+                    started_at: startDate + (allDayChecked ? '' : 'T' + startTime + ":00.000Z"),
+                    ended_at: endDate + (allDayChecked ? '' : 'T' + endTime + ":00.000Z"),
+                    location: $('#location').val(),
+                    content: $('#content').val(),
+                    url: $('#url').val()
+                };
+                console.log(formData);
+
+                $(this).prop("disabled", true);
+                $.ajax({
+                    url: "/event/api/register-event",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = "/event/listEvents.do";
+                    },
+                    error: function(xhr, status, error) {
+                        errorElement.text('일정 등록 중 오류가 발생했습니다.');
+                        if (xhr.responseText) {
+                            errorMessage += " (" + xhr.responseText + ")";
+                        }
+                        errorElement.text(errorMessage);
+                    },
+                    complete: function() {
+                        $("#register-btn-area").prop("disabled", false);
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+       
+<head>
+    <meta charset="UTF-8">
+    <title>일정 관리</title>
+</head>  
+
+<body> 
+<div layout:fragment="content" class="container">
+    <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+    <div class="content">
+        <div class="h2-wrapper"><h2>일정 관리</h2><button type="button" id="event-register-btn" class="modal-btn" data-modal-id="event-register-modal">일정 등록</button></div>
+        <div class="area-wrapper">
+            <div id="calendar-area">
+                <div id="calendar"></div>
+            </div>
+            <div>
+                <div th:if="${eventsList != null and not #lists.isEmpty(eventsList)}" th:each="event : ${eventsList}" class="event-list" th:data-event-num="${event.event_num}">
+                    <div class="event-head">
+                        <div>
+                            <span id="show-equal-event-list" th:text="${#dates.format(event.started_at, 'yyyy-MM')}" style="display: none;"></span><span class="event-date" th:text="${#dates.format(event.started_at, 'yyyy-MM-dd E')}"></span> <span class="event-time" th:text="${event.allday ? '하루종일' : #dates.format(event.started_at, 'HH:mm')}"></span>
+                        </div>
+                        <span class="event-location" th:text="${event.location}"></span>
+                    </div>
+                    <div class="event-details">
+                        <span class="event-title" th:text="${event.title}"></span>
+                        <span class="event-content" th:text="${event.content}"></span>
+                    </div>
+                <div th:unless="${eventsList != null and not #lists.isEmpty(eventsList)}">
+                    <p class="null-message">현재 등록된 일정이 없습니다.</p>
+                </div>  
+            </div>
+            </div> 
+        </div>
+    </div> 
+    <div id="event-register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-area">
+                <h2>일정 등록</h2>
+                <form id="event-form">
+                    <div class="event-form-wrapper">
+                        <div>
+                            <input type="text" id="title" name="title" placeholder="제목">
+                        </div>
+                    </div>
+                    <div class="event-form-wrapper"> 
+                        <div id="allday-area">
+                            <label for="allday">하루종일 </label>
+                            <div class="allday-toggle">
+                                <input type="checkbox" id="allday" name="allday" onclick="toggleTimeInput(!this.checked)">
+                                <label for="allday"></label>
+                            </div>
+                        </div>
+                        <div id="datetime-area">
+                            <div id="date-inputs">
+                                <div>
+                                    <label for="start_date">시작</label>
+                                    <input type="date" id="start_date" name="start_date">
+                                </div>
+                                <div>
+                                    <label for="end_date">종료</label>
+                                    <input type="date" id="end_date" name="end_date">
+                                </div>
+                            </div>
+                            <div id="time-inputs">
+                                <div>
+                                    <label for="start_time"></label>
+                                    <input type="time" id="start_time" name="start_time">
+                                </div>
+                                <div>
+                                    <label for="end_time"></label>
+                                    <input type="time" id="end_time" name="end_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-form-wrapper"> 
+                        <div>
+                            <input type="text" id="location" name="location" placeholder="장소">
+                        </div>
+                        <div>
+                            <input type="text" id="content" name="content" placeholder="내용">
+                        </div>
+                        <div>
+                            <input type="text" id="url" name="url" placeholder="URL">
+                        </div>
+                    </div>
+                    <div id="register-btn-area"><span id="registerError" class="error"></span><button type="button" id="event-modal-register-btn">등록</button></div>
+                </form>
+            </div>
+        </div>
+    </div> 
+</div>
+</body>
+</html> 

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페이지를 찾을 수 없습니다</title>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="logo_aniplant">
+            <a href="/index.do" class="link"></a>
+            <span class="blind">애니플랜트</span>
+        </h1>
+        <div class="error-message"> 
+            <h1>Error 404 - Not Found</h1>
+            <p class="error-message1">죄송합니다! 원하시는 페이지를 찾을 수 없습니다.</p>
+            <p class="error-message2">입력하신 주소가 정확한지 확인해 주시거나,<br> 아래의 링크를 사용하여 원하시는 페이지로 이동해보세요.</p>
+            <div class="error-link">
+                <span><a th:href="${session.previousPage}">이전 페이지로 돌아가기</a></sapn>
+                <span><a href="/index.do">홈페이지로 이동</a></span>
+            </div>
+        </div>
+    </div>
+</body>

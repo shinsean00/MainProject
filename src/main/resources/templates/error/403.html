@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>접근 권한이 없습니다</title>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="logo_aniplant">
+            <a href="/index.do" class="link"></a>
+            <span class="blind">애니플랜트</span>
+        </h1>
+        <div class="error-message">
+            <h1>Error 403 - Forbidden</h1>
+            <p class="error-message1">죄송합니다! 이 페이지에 접근할 권한이 없습니다.</p>
+            <p class="error-message2">로그인 상태가 아니거나, 특정 권한이 필요할 수 있습니다.<br>로그인 상태와 권한을 확인해 주세요.</p>
+            <div class="error-link">
+                <span><a th:href="${session.previousPage}">이전 페이지로 돌아가기</a></span>
+                <span><a href="/index.do">홈페이지로 이동</a></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

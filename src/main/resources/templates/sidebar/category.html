@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!--mypage-sidebar-->
+    <div th:fragment="categorySidebar" class="sidebar">
+        <ul class="sidebar-menu">
+            <a class="menu-title" href="">카테고리 관리</a>
+            <li><a href="/category/categories-list.do">카테고리 관리</a></li>
+        </ul>
+        <div class="contact-us">
+            <a href="/board/listArticles.do?categoryNum=7">고객문의함</a>
+        </div>
+    </div>
+</body>
+</html>

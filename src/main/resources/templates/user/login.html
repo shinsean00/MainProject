@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>애니플랜트 : 로그인</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" th:href="@{/css/login.css}"/>
+</head>
+<body>
+  <h1 class="logo_aniplant">
+    <a href="/index.do" class="link"></a>
+    <span class="blind">애니플랜트</span>
+  </h1>
+  <div class="content">
+    <form id="login_form" name="login_form" method="post" action="">
+        <div class="id-area"><img class="input-img" src="/img/id.png"><input type="text" id="loginID" name="username" placeholder="아이디"></div>
+        <div class="password-area"><img class="input-img" src="/img/password.png"><input type="password" id="loginPWD" name="password" placeholder="비밀번호"></div>
+        <div id="captcha-area"></div>
+        <div id="loginError" class="error"></div>
+        <button type="button" id="login_btn" class="btn_submit">로그인</button><br>
+    </form>
+  </div>
+  <div class="join-link"><a href="/user/join.do">회원가입</a></div>
+</body>
+<script>
+	// 캡챠 HTML을 제공하는 메소드
+	function getCaptcha() {
+	    $.ajax({
+	        url: "/api/captcha-load", 
+	        type: "GET",
+	        success: function(captchaResponse) {
+	            // 캡차 불러오기
+	            $("#captcha-area").load(captchaResponse.captchaUrl);
+	        },
+	        error: function() {
+	            $("#loginError").text("캡챠를 불러오는 데 실패했습니다. 다시 시도해주세요.");
+	        }
+	    });
+	}
+	
+	var captchaRequired = false;
+	
+	$(document).ready(function(){
+        // 로그인 input 이미지 변경 로직
+        $("#loginID").on('focus', function() {
+            $(".id-area img").attr("src", "/img/id2.png");
+        });
+        $("#loginID").on('blur', function() {
+            $(".id-area img").attr("src", "/img/id.png");
+        });
+        $("#loginPWD").on('focus', function() {
+            $(".password-area img").attr("src", "/img/password2.png");
+        });
+        $("#loginPWD").on('blur', function() {
+            $(".password-area img").attr("src", "/img/password.png");
+        });
+
+        $("#loginID").on('keypress', function(event) {
+            if (event.which == 13) {  // 13은 엔터키의 코드
+                event.preventDefault();  // 기본 이벤트(폼 제출)를 막음
+                $("#loginPWD").focus();  // 비밀번호 입력창으로 포커스를 이동
+            }
+        });
+
+        $("#loginPWD").on('keypress', function(event) {
+            if (event.which == 13) {  // 13은 엔터키의 코드
+                event.preventDefault();  // 기본 이벤트(폼 제출)를 막음
+                $("#login_btn").click();  // login_btn의 클릭 이벤트를 트리거
+            }
+        });
+
+    	$("#login_btn").click(function(){
+          var isValid = true // 유효성 검사
+
+          var id = $("#loginID").val();
+          var pwd = $("#loginPWD").val();
+
+          $("#loginError").text("");
+
+          if (!id) {
+            $("#loginError").text("아이디를 입력해주세요.");
+            isValid = false;
+            } else if (!pwd) {
+                $("#loginError").text("비밀번호를 입력해주세요.");
+                isValid = false;
+            } else if (captchaRequired) {
+                $("#loginError").text("캡챠 인증을 먼저 완료해주세요.");
+                isValid = false;
+            }
+          
+          if (!isValid) {  // 유효성 검사에 실패하면 함수를 빠져나옴
+                return;
+            }
+
+          var formData = {
+            id: id,
+            pwd: pwd
+          };
+          
+       	  // AJAX 로그인 post 요청 로직
+          $(this).prop("disabled", true);  // 로그인 버튼 비활성화
+          $.ajax({
+              url: "/api/login", // 로그인 요청 로직
+              type: "POST",
+              contentType: "application/json",
+              data: JSON.stringify(formData),
+              success: function(response) {
+                  if(response.redirectUrl) {
+                      window.location.href = response.redirectUrl;
+                  } else {
+                      $("#loginError").text(response.message);
+                  }
+              },
+              error: function(xhr) {
+                  var response = JSON.parse(xhr.responseText);
+                  $("#loginError").text(response.message);
+                  if (response.captchaRequired) { // 로그인 5회 이상 실패 시
+                	  captchaRequired = response.captchaRequired;
+                      // chaptcha AJAX 요청
+                      getCaptcha();
+                  }
+              },
+              complete: function() {
+                  $("#login_btn").prop("disabled", false);  // 로그인 버튼 활성화
+              }
+          });
+    	});
+  	});
+</script>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/defaultLayout}">
+
+<head>
+	<title>반려친구 등록</title>
+</head>
+<th:block layout:fragment="css">
+</th:block>
+<th:block layout:fragment="script">
+	<script th:src="@{/js/pet/pet-join.js}"></script>
+</th:block>
+
+<div layout:fragment="content" class="container">
+	<!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/mypage :: mypageSidebar"></div>
+	<div class="content">
+		<form id="join_form" name="join_form" method="post" action="/api/register-pet" enctype="application/json">
+			<input type="text" id="nameInput" name="name" placeholder="이름을 입력해 주세요"><br>
+			<input type="date" id="birth_input" name="birthInput" placeholder="생일을 입력해 주세요"><br>
+			<input type="date" id="adopted_at_input" name="adopted_atInput " placeholder=입양일><br>
+
+			<input type='radio' id='animal' name='species' value='animal'>
+			<label for='animal'>동물</label><br>
+
+			<input type='radio' id='plant' name='species' value='plant'>
+			<label for='plant'>식물</label><br>
+
+			<button type=button id=join_btn class=btn_submit>등록</button>
+		</form>
+
+	</div>
+</div>

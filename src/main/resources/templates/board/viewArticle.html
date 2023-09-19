@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+layout:decorate="~{layout/defaultLayout}"><!--푸터, 헤더 적용--> 
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${board.title}"></title>
+</head>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/board.css}" >
+</th:block>
+
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script"> 
+   <script th:inline="javascript">
+    // 수정 페이지 메소드
+    function redirectToEditPage(buttonElement) {
+        const postNum = document.getElementById("postNum").textContent;
+        const url = `/board/articleEditForm.do?post_num=${postNum}`;
+        window.location.href = url;
+    }
+
+
+   var isGoodVoted = false;
+   var isBadVoted = false;
+   var goodButtonClicked = false;
+   var badButtonClicked = false;
+   var currentUserNum;
+   $(document).ready(function() {
+	   currentUserNum = $("#curUserNum").text();
+	});
+
+   function toggleGoodCount(post_num) {
+	// 이미 클릭된 경우 아무 작업도 수행하지 않습니다.
+	    if (goodButtonClicked) {
+	        return;
+	    }
+       $.ajax({
+           type: "POST",
+           url: "/vote", 
+           data: {
+               user_num: currentUserNum,
+               post_num: post_num,
+               vote_type: "good"
+           },
+           success: function (response) {
+               alert(response);
+            // 성공한 경우 클릭 여부를 true로 설정합니다.
+               goodButtonClicked = true;
+           },
+           error: function (error) {
+               alert("이미 투표한 게시물입니다.");
+           },
+       });
+   }
+
+    
+   function toggleBadCount(post_num) {
+	   // 이미 클릭된 경우 아무 작업도 수행하지 않습니다.
+	    if (badButtonClicked) {
+	        return;
+	    }
+       $.ajax({
+           type: "POST",
+           url: "/vote", 
+           data: {
+               user_num: currentUserNum,
+               post_num: post_num,
+               vote_type: "bad"
+           },
+           success: function (response) {
+               alert(response);
+            // 성공한 경우 클릭 여부를 true로 설정합니다.
+               badButtonClicked = true;
+           },
+           error: function (error) {
+               alert("이미 투표한 게시물입니다.");
+           },
+       });
+   }
+   
+//    document.addEventListener("DOMContentLoaded", function() {
+//          var editButton = document.getElementById("editButton");
+//          var titleInput = document.getElementById("titleInput");
+//          var contentTextarea = document.getElementById("contentTextarea");
+//          var deleteButton = document.getElementById("deleteButton"); // 추가
+//            var goodButton = document.getElementById("goodButton");
+//          var badButton = document.getElementById("badButton");
+         
+//         //  editButton.addEventListener("click", function() {
+//         //   topLevelSelect.removeAttribute("disabled");
+//         //    titleInput.removeAttribute("disabled");
+//         //    contentTextarea.removeAttribute("disabled");
+//         //    editButton.style.display = "none";
+//         //    resetButton.style.display = "inline";
+//         //    saveButton.style.display = "inline";
+//         //    deleteButton.style.display = "none";
+//         //    goodButton.style.display = "none";
+//         //    badButton.style.display = "none";
+//         //  });         
+//        });
+   </script>
+    <script>
+        // JavaScript 코드
+    
+        // 댓글 데이터를 저장하는 배열
+        let comments = [];
+    
+        // 페이지 로드 시 댓글을 표시하는 함수 호출
+        window.onload = displayComments;
+    
+        // 댓글 표시 함수
+        function displayComments() {
+            const commentsDiv = document.getElementById("comments");
+            commentsDiv.innerHTML = ""; // 이전에 표시된 댓글 제거
+    
+            // 서버에서 댓글 데이터를 가져와야 하지만 여기서는 배열을 사용
+            for (let i = 0; i < comments.length; i++) {
+                const comment = comments[i];
+                const commentDiv = document.createElement("div");
+                commentDiv.className = "comment";
+                commentDiv.innerHTML = `
+                    <div class="comment-content">${comment.content}</div>
+                    <button onclick="editComment(${i})">수정</button>
+                    <button onclick="deleteComment(${i})">삭제</button>
+                    <div id="replies-${i}"></div>
+                    <textarea id="replyInput-${i}" placeholder="대댓글을 작성하세요"></textarea>
+                    <button onclick="addReply(${i})">대댓글 작성</button>
+                `;
+    
+                commentsDiv.appendChild(commentDiv);
+    
+                // 대댓글 표시
+                const replyDiv = document.getElementById(`replies-${i}`);
+                for (let j = 0; j < comment.replies.length; j++) {
+                    const reply = comment.replies[j];
+                    const replyContent = document.createElement("div");
+                    replyContent.className = "reply";
+                    replyContent.innerHTML = `
+                        <div class="reply-content">${reply.content}</div>
+                        <button onclick="editReply(${i}, ${j})">수정</button>
+                        <button onclick="deleteReply(${i}, ${j})">삭제</button>
+                    `;
+                    replyDiv.appendChild(replyContent);
+                }
+            }
+        }
+    
+        // 댓글 작성 함수
+        function addComment() {
+            const commentInput = document.getElementById("commentInput");
+            const content = commentInput.value;
+            if (content.trim() === "") {
+                alert("댓글 내용을 입력하세요.");
+                return;
+            }
+    
+            // 서버에 댓글 데이터 전송 및 저장
+            const newComment = { content, replies: [] };
+            comments.push(newComment);
+            commentInput.value = ""; // 입력 필드 비우기
+            displayComments();
+        }
+    
+        // 댓글 수정 함수
+        function editComment(commentIndex) {
+            const newContent = prompt("댓글을 수정하세요:", comments[commentIndex].content);
+            if (newContent === null) return; // 사용자가 취소 버튼을 누른 경우
+    
+            comments[commentIndex].content = newContent;
+            displayComments();
+        }
+    
+        // 댓글 삭제 함수
+        function deleteComment(commentIndex) {
+            if (confirm("댓글을 삭제하시겠습니까?")) {
+                comments.splice(commentIndex, 1);
+                displayComments();
+            }
+        }
+    
+        // 대댓글 작성 함수
+        function addReply(commentIndex) {
+            const replyInput = document.getElementById(`replyInput-${commentIndex}`);
+            const content = replyInput.value;
+            if (content.trim() === "") {
+                alert("대댓글 내용을 입력하세요.");
+                return;
+            }
+    
+            const newReply = { content };
+            comments[commentIndex].replies.push(newReply);
+            replyInput.value = "";
+            displayComments();
+        }
+    
+        // 대댓글 수정 함수
+        function editReply(commentIndex, replyIndex) {
+            const newContent = prompt("대댓글을 수정하세요:", comments[commentIndex].replies[replyIndex].content);
+            if (newContent === null) return;
+    
+            comments[commentIndex].replies[replyIndex].content = newContent;
+            displayComments();
+        }
+        
+        // 대댓글 삭제 함수
+        function deleteReply(commentIndex, replyIndex) {
+            if (confirm("대댓글을 삭제하시겠습니까?")) {
+                comments[commentIndex].replies.splice(replyIndex, 1);
+                displayComments();
+            }
+        }
+    </script>
+</th:block>
+
+
+
+<body>
+    <!-- Content -->
+    <div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/article :: articleSidebar"></div>
+    
+    <div class="content">
+        <div class="h2-wrapper"><span id="postNum" th:text="${board.post_num}" style="display: none;"></span><h2 th:text="${board.post_num + '. ' + board.title}"></h2>
+            <div id="btn-area">
+                <button type="button" value="수정하기" id="editButton" class="article-btn" th:if="${board.created_user_num == #authentication.principal.usernum}" onclick="redirectToEditPage(this)">수정하기</button>
+                <form th:action="@{/delete/{post_num}(post_num=${board.post_num})}" method="post">
+                    <!-- 삭제하기 버튼을 특정 조건에 따라 보이게 하기 -->
+                    <button type="submit" value="삭제하기" id="deleteButton" class="article-btn" onclick="return confirm('게시글을 삭제하시겠습니까?')" th:if="${board.created_user_num == #authentication.principal.usernum}">삭제하기</button>
+                    <input type="hidden" name="categoryNum" th:value="${board.category_num}"/>
+                </form>
+            </div>
+        </div>
+        <div>
+            <div class="article-info">
+                <div class="article-user-info">
+                    <div><img id="article-poster-rank-img" th:src="${poster.rank.imagePath}"><span th:text="${poster.nickname}"></span></div>
+                    <div th:text="${#dates.format(board.created_at, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+                <div class="article-stats">
+                    <div>조회수 : <span th:text="${board.views}"></span></div>
+                    <div>추천수 : <span th:text="${board.good}"></span></div>
+                    <div>비추천수 : <span th:text="${board.bad}"></span></div>
+                </div>                
+            </div>
+            
+            <div id="article-content" th:text="${board.content}"></div>
+            <div class="vote-area">
+                <div>
+                    <button id="goodButton" th:attr="data-post-num=${board.post_num}" onclick="toggleGoodCount(this.getAttribute('data-post-num'))">
+                        <img class="vote-btn-icon" th:src="@{/img/board/good-icon.png}"> <span>추천</span>
+                    </button>
+                </div>
+                <div>
+                	<span id="curUserNum" th:text="${#authentication.principal.usernum}" style="display: none;"></span>
+                    <button id="badButton" th:attr="data-post-num=${board.post_num}" onclick="toggleBadCount(this.getAttribute('data-post-num'))">
+                        <img class="vote-btn-icon" th:src="@{/img/board/bad-icon.png}"> <span>비추천</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+            <div id="comments">
+                <!-- 댓글과 대댓글을 표시할 공간 -->
+            </div>
+
+            <div id="commentForm">
+                <textarea id="commentInput" placeholder="댓글창 "></textarea>
+                <button onclick="addComment()" disabled>댓글 작성</button>
+            </div>            
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+/* 검색창 스타일 */
+.search-area {
+    position: relative;
+	border: 2px solid #14b8a6;
+	border-radius: 20px;
+	transition: box-shadow 0.3s ease;
+	padding: 10px;
+	width: 400px;
+	height: 42px;
+    z-index: 20;
+}
+.search-area:hover {
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+#search_form {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1px;
+}
+#search_form input[type="text"] {
+	flex-grow: 1;
+	margin-right: 10px;
+	border: none;
+	border-radius: 5px;
+	outline: none;
+	height: 100%;
+	font-size: 17px;
+    padding: 10px 15px 10px 8px; 
+    height: auto;
+}
+#search_btn {
+	background-image: url('/img/btn-search.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #ffffff;
+	width: 40px;
+	height: 40px;
+	border: none;
+	cursor: pointer;
+}
+
+#recent_searches {
+    position: absolute;
+    top: 60px;
+    left: -2px;
+    width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 21;
+    padding: 10px;
+    display: none;
+}
+
+#recent_searches li {
+    list-style-type: none;
+    padding: 5px 0;
+}
+
+#recent_searches li:hover {
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-area.active {
+    border-top: 2px solid #14b8a6;
+    border-left: 2px solid #14b8a6;
+    border-right: 2px solid #14b8a6;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+}
+
+.search-area.active:hover {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+}
+
+#recent_searches {
+    border-top: 1px solid #d3d3d3;
+    border-left: 2px solid #14b8a6;
+    border-right: 2px solid #14b8a6;
+    border-bottom: 2px solid #14b8a6;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.4);
+}
+
+.recent-search-img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 4px;
+    margin-left: 2px;
+    margin-bottom: 3px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-animation {
+    animation: shake 0.5s;
+}
+
+
+/* 알림창 스타일 */
+#search-modal {
+    display: none; 
+    position: fixed;
+    z-index: 30;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); 
+}
+
+#search-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 7px;
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+#search-modal-text {
+    vertical-align: middle;
+    padding: 13px 0px 10px 5px;
+    font-size: 17px;
+}
+
+.ping {
+    --uib-size: 45px;
+    --uib-speed: 2s;
+    --uib-color: black;
+  
+    position: relative;
+    height: var(--uib-size);
+    width: var(--uib-size);
+  }
+  
+  .ping::before,
+  .ping::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background-color: var(--uib-color);
+    animation: pulse var(--uib-speed) linear infinite;
+    transform: scale(0);
+    opacity: 0;
+  }
+  
+  .ping::after {
+    animation-delay: calc(var(--uib-speed) / -2);
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }

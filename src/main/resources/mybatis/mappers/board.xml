@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+    <resultMap id="boardResultMap" type="boardVO">
+		<result property="post_num" column="post_num"/>
+        <result property="category_num" column="category_num"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="views" column="views"/>
+        <result property="good" column="good"/>
+        <result property="bad" column="bad"/>
+        <result property="created_user_num" column="created_user_num"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_user_num" column="updated_user_num"/>
+        <result property="updated_at" column="updated_at"/>
+        <result property="is_deleted" column="is_deleted"/>
+        <result property="deleted_user_num" column="deleted_user_num"/>
+        <result property="deleted_at" column="deleted_at"/>
+        <result property="author" column="author"/>
+    </resultMap>
+    
+    <!-- 게시글 목록 조회 쿼리 -->
+	<select id="selectArticlesWithPaging"
+		resultMap="boardResultMap">
+		SELECT * FROM TB_BOARD
+		WHERE Is_Deleted = 0 AND Category_Num = #{categoryNum}
+		ORDER BY Post_Num DESC
+		LIMIT #{cri.perPageNum} OFFSET #{cri.startRow}
+	</select>
+
+	<!-- 아이템 총 개수 조회 쿼리 -->
+	<select id="getTotalCount" resultType="int">
+		SELECT COUNT(*) FROM TB_BOARD
+		WHERE Is_Deleted = 0 AND Category_Num = #{categoryNum}
+	</select>
+
+	<!-- 검색 아이템 총 개수 조회 쿼리 -->
+	<select id="getSelectTotalCount" resultType="int">
+		SELECT COUNT(*) FROM TB_BOARD
+		WHERE Is_Deleted = 0 AND Category_Num = #{categoryNum}
+		AND ${searchType} LIKE CONCAT('%', #{keyword}, '%')
+	</select>
+
+	<!-- 검색 쿼리 -->
+	<select id="searchArticles" resultMap="boardResultMap">
+		SELECT * FROM TB_BOARD
+		WHERE Is_Deleted = 0  AND Category_Num = #{categoryNum}
+		AND ${searchType} LIKE CONCAT('%', #{keyword}, '%')
+		ORDER BY Post_Num DESC
+		LIMIT #{perPageNum} OFFSET #{startRow}
+	</select>
+    
+      <select id="selectArticlesByCategory" resultType="boardVO" parameterType="int">
+    SELECT * FROM TB_BOARD
+    WHERE  category_num = #{categoryNum} AND Is_Deleted = 0;
+      </select>
+      
+      <select id="selectArticleByPostNum" resultType="boardVO" parameterType="int">
+        SELECT * FROM TB_BOARD
+        WHERE post_num = #{post_num}
+    </select>
+  	  
+	 <insert id="insertArticle" parameterType="boardVO">
+        INSERT INTO TB_BOARD (category_num, title, content, views, good, bad, created_user_num, created_at,author)
+        VALUES (#{category_num}, #{title}, #{content}, #{views}, #{good}, #{bad}, #{created_user_num}, NOW(),#{author})
+    </insert>
+    
+    <select id="getBoardByPostNum" parameterType="int" resultType="boardVO">
+    	SELECT * FROM TB_BOARD WHERE post_num = #{post_num}
+    </select>
+    
+    <update id="updateBoard" parameterType="boardVO">
+	    UPDATE TB_BOARD
+	    SET title = #{title},
+	        content = #{content},
+	        updated_at = NOW() -- 현재 시간으로 업데이트
+	    WHERE post_num = #{post_num}
+	</update>
+	
+	<update id="deleteBoard" parameterType="boardVO">
+        UPDATE TB_BOARD
+        SET
+            deleted_at = NOW(),
+            deleted_user_num = #{deleted_user_num},
+            is_deleted = true
+        WHERE post_num = #{post_num}
+    </update>
+    
+    <update id="increaseViews" parameterType="int">
+	    UPDATE TB_BOARD
+	    SET views = views + 1
+	    WHERE post_num = #{post_num}
+	</update>
+
+	<select id="getSearchResults" parameterType="list" resultType="java.lang.Integer">
+	    SELECT DISTINCT post_num FROM TB_BOARD
+	    WHERE 
+	    <foreach item="item" index="index" collection="list" open="" separator=" OR " close="">
+	        title LIKE CONCAT('%', #{item}, '%') 
+	        OR content LIKE CONCAT('%', #{item}, '%') 
+	        OR author LIKE CONCAT('%', #{item}, '%')
+	    </foreach>
+	</select>
+    
+    <select id="getBoardResults" parameterType="list" resultMap="boardResultMap">
+	    SELECT post_num, title, content, author, created_at 
+	    FROM TB_BOARD
+	    WHERE post_num IN 
+	    <foreach item="postNum" index="index" collection="list" open="(" separator="," close=")">
+	        #{postNum}
+	    </foreach>
+	</select>
+  
+  <!-- 추천 -->
+	<update id="updateGoodCount">
+    	UPDATE TB_BOARD
+    	SET good = good + 1
+    	WHERE post_num = #{post_num}
+	</update>
+	
+	<!-- 비추천 -->
+	<update id="updateBadCount">
+    	UPDATE TB_BOARD
+    	SET bad = bad + 1
+    	WHERE post_num = #{post_num}
+	</update>
+	
+	 <!-- 게시글의 추천 횟수 증가 -->
+    <update id="incrementGoodCount" parameterType="int">
+        UPDATE TB_BOARD
+        SET Good_Count = Good_Count + 1
+        WHERE Post_Num = #{postNum}
+    </update>
+    
+    <!-- 게시글의 비추천 횟수 증가 -->
+    <update id="incrementBadCount" parameterType="int">
+        UPDATE TB_BOARD
+        SET Bad_Count = Bad_Count + 1
+        WHERE Post_Num = #{postNum}
+    </update>
+	
+	<select id="viewPetBoard" resultType="boardVO">
+	    SELECT * FROM TB_BOARD
+	    WHERE parent_category_num = 1
+	    ORDER BY created_at
+	</select>
+	
+	<select id="viewPlantBoard" resultType="boardVO">
+	    SELECT * FROM TB_BOARD
+	    WHERE parent_category_num = 2
+	    ORDER BY created_at
+	</select>
+	
+	<select id="viewPopularBoard" resultType="boardVO">
+	    SELECT * FROM TB_BOARD 
+	    ORDER BY (good - bad) DESC, created_at DESC
+	    LIMIT 10
+	</select>
+	
+	<select id="viewTopOwner" resultType="boardVO">
+		SELECT author, COUNT(*) as post_count
+		FROM TB_BOARD
+		WHERE MONTH(created_at) = MONTH(CURRENT_DATE) AND YEAR(created_at) = YEAR(CURRENT_DATE)
+		GROUP BY author
+		ORDER BY post_count DESC
+		LIMIT 3;
+	</select>
+	
+
+</mapper>

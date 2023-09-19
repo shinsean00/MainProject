@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/defaultLayout}">
+
+<head>
+	<title>게시판</title>
+</head>
+
+<!-- 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+	<!-- <link rel="stylesheet" th:href="@{/css/category.css}" > -->
+	<link rel="stylesheet" th:href="@{/css/board.css}" >
+</th:block>
+
+<!-- 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+	<script th:src="@{/js/board.js}"></script>
+	<script>
+		$(document).ready(function() {
+			// 셀렉트 박스의 변경 이벤트 리스너 등록
+			$('#perPageNumSelect').on('change', function() {
+				// 선택한 값 가져오기
+				var selectedValue = $(this).val();
+
+				// 페이지당 개수 필드 업데이트
+				$('[name="perPageNum"]').val(selectedValue);
+
+				// 폼 제출
+				$('#perPageNumSelect').submit();
+			});
+		});
+	</script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/article :: articleSidebar"></div>
+	<div class="content">
+		<div class="h2-wrapper">
+			<h2 th:text="${category.name} + ' 게시판'"></h2>
+			<div>
+				<form id="perPageNumSelect" action="/board/articles-list.do" method="get">
+					<select name="newPerPageNum">
+						<option value="10" th:selected="${paging.perPageNumVal == 10}">10개</option>
+						<option value="20" th:selected="${paging.perPageNumVal == 20}">20개</option>
+						<option value="50" th:selected="${paging.perPageNumVal == 50}">50개</option>
+					</select>
+					<input type="hidden" name="categoryNum" th:value="${category.category_num}">
+				</form>
+				<button type="button" id="article-register-btn" onclick="redirectToArticleForm()">게시글 등록</button>
+			</div>
+		</div>
+		<div>
+			<table class="category-table">
+				<tr>
+					<th>No</th>
+					<th>번호</th>
+					<th>제목</th>
+					<th>글쓴이</th>
+					<th>작성일</th>
+					<th>조회</th>
+					<th>추천</th>
+					<th>비추천</th>
+				</tr>
+				<!-- 검색 결과가 없는 경우 -->
+				<tr th:if="${#lists.isEmpty(articlesList)}">
+					<td colspan="8" class="no-results">검색 결과가 없습니다.</td>
+				</tr>
+
+				<!-- 검색 결과가 있는 경우 -->
+				<tr th:each="board, rowStat : ${articlesList}" onclick="redirectToArticlePage(this);">
+				    <td th:text="${(paging.getCurrent() - 1) * paging.getPerPageNumVal() + (rowStat.index + 1)}"></td>
+				    <td class="postNum" th:text="${board.post_num}"></td>
+					<td th:text="${board.title}"></td>
+					<td th:text="${board.created_user_num}"></td>
+					<td th:text="${#dates.format(board.created_at, 'yyyy-MM-dd')}"></td>
+					<td th:text="${board.views}"></td>
+					<td th:text="${board.good}"></td>
+					<td th:text="${board.bad}"></td>
+				</tr>
+			</table>
+		</div>
+
+
+		<!-- 페이징 부분 -->
+		<div class="pagination">
+			<ul>
+				<!-- 처음으로 이동하는 링크 -->
+				<li th:if="${paging.cri.page > 1}"><a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=1, newPerPageNum=${paging.perPageNumVal})}">처음</a>
+				</li>
+				<!-- 10페이지 이전 페이지 링크 -->
+				<li th:if="${paging.startPage - paging.pageCount > 0}"><a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${paging.startPage-10}, newPerPageNum=${paging.perPageNumVal})}">
+						<span th:unless="${paging.cri.page == 1}"><<</span>
+				</a></li>
+				<!-- 1페이지 이전 페이지 링크 -->
+				<li th:if="${paging.cri.page - 1 > 0}"><a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${paging.getPrev()}, newPerPageNum=${paging.perPageNumVal})}">
+						<span th:if="${paging.cri.page != 1}">이전</span>
+				</a></li>
+				<!-- 페이지 번호 링크 반복 -->
+				<li th:each="num : ${pageNumbers}"
+					th:class="${num == paging.cri.page ? 'active' : ''}"><a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${num}, newPerPageNum=${paging.perPageNumVal})}"
+					th:text="${num}"></a></li>
+				<!-- 1페이지 다음 페이지 링크 -->
+				<li th:if="${paging.cri.page + 1 <= paging.totalPage}"><a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${paging.getNext()}, newPerPageNum=${paging.perPageNumVal})}">다음</a>
+				</li>
+				<!-- 10페이지 다음 페이지 링크 -->
+				<li th:if="${paging.endPage + paging.pageCount <= paging.totalPage}">
+					<a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${paging.endPage + 1}, newPerPageNum=${paging.perPageNumVal})}">>></a>
+				</li>
+				<!-- 마지막 페이지로 이동하는 링크 -->
+				<li th:if="${paging.endPage + paging.pageCount <= paging.totalPage}">
+					<a
+					th:href="@{/board/articles-list.do(categoryNum=${category.category_num}, page=${paging.totalPage}, newPerPageNum=${paging.perPageNumVal})}">마지막</a>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+
+</div>
+
+

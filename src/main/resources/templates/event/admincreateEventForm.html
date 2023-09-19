@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>일정 등록</title>
+    <link rel="stylesheet" th:href="@{/css/event.css}">
+</head>
+
+<body>
+    <div layout:fragment="content" class="container">
+        <div th:replace="sidebar/privacy-admin :: userManagementSidebar"></div>
+        <div class="content"></div>
+
+        <style>
+            .form-container {
+                margin-top: 100px;
+                margin-left: -100px;
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+            }
+
+            .date-range {
+                display: flex;
+                align-items: center;
+            }
+
+            .date-range input {
+                margin: 15 20px;
+            }
+
+            button {
+                background-color: #14a6b8;
+                color: #fff;
+                padding: 4px 20px;
+                border: none;
+                border-radius: 5px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #2980b9;
+            }
+        </style>
+
+        <h2>일정 등록</h2>
+
+        <div class="form-container">
+            <form th:action="@{/event/admincreateEvent}" th:object="${event}" method="post">
+            
+            
+            <div class="form-group" id="datetime-area">
+                    <div id="date-inputs">
+                        <div>
+                            <label for="start_date">시작</label>
+                            <input type="date" id="start_date" name="start_date">
+                            <label for="start_time">시작시간</label>
+                            <input type="time" id="start_time" name="start_time">
+                        </div>
+                        <div>
+                            <label for="end_date">종료</label>
+                            <input type="date" id="end_date" name="end_date">
+                            <label for="end_time">종료시간</label>
+                            <input type="time" id="end_time" name="end_time">
+                        </div>
+                        <span id="dateError" style="color: red;"></span>  
+                    </div>
+                </div>
+                 
+                <div class="form-group">
+                    <label for="title">제목</label>
+                    <input type="text" id="title" name="title" th:field="*{title}" required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="location">장소</label>
+                    <input type="text" id="location" name="location" th:field="*{location}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <input type="text" id="content" name="content" th:field="*{content}" required>
+                </div>
+
+                <button type="submit">등록</button>
+            </form>
+        </div>
+
+   <script>
+    var startDateElement = document.getElementById("start_date");
+    var endDateElement = document.getElementById("end_date");
+    var dateErrorElement = document.getElementById("dateError"); // 경고 메시지를 표시할 요소
+    var submitButton = document.querySelector("button[type=submit]");
+
+    startDateElement.addEventListener("change", validateDateRange);
+    endDateElement.addEventListener("change", validateDateRange);
+
+    function validateDateRange() {
+        var startDate = new Date(startDateElement.value);
+        var endDate = new Date(endDateElement.value);
+ 
+        if (startDate >= endDate) {
+            dateErrorElement.textContent = "시작일은 종료일보다 이전이어야 합니다.";
+            // 유효하지 않은 경우, 입력 필드를 지울 수 있도록 다음 두 줄을 주석 처리합니다.
+            // startDateElement.value = "";
+            // endDateElement.value = "";
+            submitButton.disabled = true; // 등록 버튼 비활성화
+        } else {
+            dateErrorElement.textContent = "";
+            submitButton.disabled = false; // 등록 버튼 활성화
+        }
+    }
+</script>
+    </div> 
+</body>
+
+</html>

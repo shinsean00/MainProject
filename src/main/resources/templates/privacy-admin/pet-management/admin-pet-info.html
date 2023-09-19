@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+
+<head>
+	<title>관리자 반려친구 정보</title>
+</head>
+<th:block layout:fragment="css">
+
+	<link rel="stylesheet" th:href="@{/css/pet-management.css}">
+	<style>
+		.table-scrollable {
+			max-height: 200px;
+			overflow-y: auto;
+			display: block;
+		}
+	</style>
+</th:block>
+<th:block layout:fragment="script">
+	<script th:src="@{/js/pet/admin-pet-info.js}"></script>
+</th:block>
+
+<div layout:fragment="content" class="container">
+	<!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/privacy-admin :: petManagementSidebar"></div>
+
+	<div id="info-display">
+		<div class="detail-content">
+			<div class="contact-info-area">
+				<h2 th:text="${pet.name}"></h2>
+				<div><img id="detail-profile-img" th:src="@{${pet.profile_picture}}"></div>
+				<li><strong>생일 : </strong><span th:text="${#dates.format(pet.birth, 'yyyy-MM-dd')}"></span></li>
+				<li><strong>입양일 : </strong><span th:text="${#dates.format(pet.adopted_at, 'yyyy-MM-dd')}"></span></li>
+				<li><strong>나이 : </strong><span class="age"
+						th:data-birth="${#dates.format(pet.birth, 'yyyy-MM-dd')}"></span></li>
+			</div>
+			<div class="account-info-area">
+				<div>
+					<h2>반려인 정보</h2>
+				</div>
+				<div>
+					<li><strong>회원 번호 : </strong><span th:text="${user.user_num}"></span></li>
+					<li><strong>아이디 : </strong><span th:text="${user.id}"></span></li>
+					<li><strong>이름 : </strong><span th:text="${user.name}"></span></li>
+					<li><strong>가입일 : </strong><span th:text="${#dates.format(user.created_at, 'yyyy-MM-dd')}"></span>
+					</li>
+				</div>
+			</div>
+			<div class="button-area">
+				<button class="btn btn-primary" onclick="showEditForm();">수정하기</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- 수정 폼 (처음에는 숨겨져 있습니다) -->
+	<div id="edit-form" style="display: none;">
+		<div class="detail-content">
+			<div class="contact-info-area">
+				<input type="hidden" id="petNo" name="pet_no" th:value="${pet.pet_no}">
+				<h2><input type="text" id="nameUpdateInput" name="name" th:value="${pet.name}"></h2>
+				<li><strong>생일 : </strong><input type="date" id="birthUpdateInput" name="birth"
+						th:value="${#dates.format(pet.birth,'yyyy-MM-dd')}"></li>
+				<li><strong>입양일 : </strong><input type="date" id="adoptedAtUpdateInput" name="adopted_at"
+						th:value="${#dates.format(pet.adopted_at,'yyyy-MM-dd')}"></li>
+				<li><strong>반려인 : </strong><input type="text" id="adoptedUserIdUpdateInput" name="adopted_user_id"
+						th:value="${user.id}" readonly></li>
+				<li><input type="hidden" id="adoptedUserNumUpdateInput" name="adopted_user_num" readonly></li>
+			</div>
+			<div class="account-info-area">
+				<div>
+					<h2>반려인 수정</h2>
+				</div>
+				<li><select id="searchCategory">
+					<option value="0">회원번호</option>
+					<option value="1">아이디</option>
+					<option value="2">반려인</option>
+				</select>
+
+				<input type="text" id="searchInput" onkeyup="searchFunction()" placeholder="검색어를 입력하세요.."></li>
+				<div class="table-scrollable">
+					<table id="userTable">
+						<tr>
+							<th>회원번호</th>
+							<th>아이디</th>
+							<th>반려인</th>
+						</tr>
+						<tr th:each="userList: ${userList}" onclick="selectUserNum('${userList.user_num}')">
+							<td th:text="${userList.user_num}"></td>
+							<td th:text="${userList.id}"></td>
+							<td th:text="${userList.name}"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="button-area">
+				<!-- 저장하기 버튼을 클릭하면 수정된 정보를 서버에 전달하는 함수를 호출합니다. -->
+				<button type="button" id="update_btn" class="btn btn-submit" onclick="submitUpdates();">저장하기</button>
+
+				<!-- 취소 버튼 추가 - 이전 상태로 되돌리기 위함 -->
+				<button type="button" class="btn btn-cancel" onclick="hideEditForm();">취소</button>
+
+				<!-- 삭제 버튼 추가 - 펫을 삭제하고 db에서는 제거하지 않음 -->
+				<button type="button" class="btn btn-delete" onclick="submitDelete();">삭제</button>
+			</div>
+		</div>
+	</div>
+
+</div>

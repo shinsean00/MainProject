@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    background-color: #f6f6f6;
+}
+
+.error-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+    background: #FEF9F7;
+    width: 750px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
+    margin-top: 100px;
+}
+
+.logo_aniplant {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.logo_aniplant .link {
+    background-image: url("/img/aniplant_logo_animation.gif");
+    background-repeat: no-repeat;
+    background-size: 250px 250px;
+    background-position: center;
+    display: block;
+    width: 250px;
+    height: 250px;
+}
+.blind {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 42px;
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 14px;
+    padding: 3px 0px;
+    margin: 0px;
+}
+.error-message1 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0a5e55;
+}
+.error-message2 {
+    font-size: 15px;
+    color: #109385;
+}
+
+
+a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 글자 색상을 상속받게 설정 */
+}
+a:hover {
+    text-decoration: none; /* 호버 상태에서 밑줄 제거 */
+}
+a:visited {
+    color: inherit; /* 방문한 링크의 색상을 상속받게 설정 */
+}
+
+.error-link {
+    padding: 10px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.error-link a {
+    padding: 10px 15px;
+    margin: 0px 2px;
+    color: #FEF9F7;
+    background-color: #14b8a6;
+    border-radius: 7px; 
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.error-link a:hover {
+    background-color: #109385;
+    transform: scale(1.05);
+}

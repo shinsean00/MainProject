@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- JS 사진 편집 오픈소스 소프트웨어 cropper -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.js"></script>
+    <script th:src="@{/js/cropper.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/cropper.css}">
+</head>
+
+<title>프로필 사진 변경</title>
+
+<body>
+    <div class="content">
+        <!-- <h2>프로필 사진 변경</h2> -->
+        <div id="cropper-area">
+            <div id="cropper-edit-area">
+                <img id="editCropperImage" class="profileImage" th:src="@{${currentProfilePic}}">
+            </div>
+            <div id="cropper-setting-area">
+                <label for="profileImageInput" class="label-file-input">
+                    <img th:src="@{/img/cropper/image-plus.png}" alt="Upload Icon"> 프로필 사진 선택
+                </label>
+                <input type="file" id="profileImageInput" name="profile_picture">
+                <div class="preview">
+                    <img id="previewImage" class="profileImagePreview">
+                </div>
+                <div class="cropper-btn-group1">
+                    <button type="button" id="dragModeMoveBtn" class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/move.png} + ');'"></button>
+                    <button type="button" id="dragModeCropBtn" class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/crop.png} + ');'"></button>
+                    <button type="button" id="rotateLeftBtn" class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/rotate-left.png} + ');'"></button>
+                    <button type="button" id="rotateRightBtn" class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/rotate-right.png} + ');'"></button>
+                    <button type="button" id="flipVerticalBtn"  class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/flip-vertical.png} + ');'"></button>
+                    <button type="button" id="flipHorizontalBtn" class="cropper-btn" th:style="'background-image:url(' + @{/img/cropper/flip-horizontal.png} + ');'"></button>
+                </div>
+                <div class="cropper-btn-group2">
+                    <button type="button" id="resetBtn" class="cropper-btn"><img th:src="@{/img/cropper/reset.png}">초기화</button>
+                    <button type="button" id="saveBtn" class="cropper-btn"><img th:src="@{/img/cropper/save.png}">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

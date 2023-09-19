@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout/defaultLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>계정 정보 관리</title>
+</head>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+	<style>
+	</style>
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+	<script>
+        $(document).ready(function() {
+            $("#pwdInput").on('keypress', function(e) {
+                if(e.which == 13) { 
+                    $("#confirm_btn").click(); 
+                }
+            });
+
+            $("#confirm_btn").click(function() {
+                var isValid = true // 유효성 검사
+
+                var pwd_confirm = $("#pwdInput").val();
+
+                if (!pwd_confirm) {
+                    $("#confirmError").text("비밀번호를 입력해주세요.");
+                    isValid = false;
+                } else {
+                    $("#confirmError").text("");
+                }
+
+                if (!isValid) {  // 유효성 검사에 실패하면 함수를 빠져나옴
+                    return;
+                }
+
+                $(this).prop("disabled", true);  // 수정하기 버튼 비활성화
+                
+                // 사용자 본인인지 확인하는 비밀번호 확인 로직
+                $.ajax({
+                    url: "/api/confirmUser",
+                    type: "POST",
+                    data: { pwd: pwd_confirm },
+                    success: function(response) { // .content 부분만 다른 페이지의 .content 부분을 불러와서 변경
+                    	if (response.status === 'success') {
+                    		$('.content').load("/mypage/my-info-update.do");
+                    	}
+                    },
+                    error: function(xhr, status, error) {
+                    if (xhr.status == 401) {  // HTTP 상태 코드 401: Unauthorized
+                            $("#confirmError").text(xhr.responseJSON.errorMessage);
+                        } else {
+                            $("#confirmError").text("비밀번호 확인 중 오류가 발생했습니다.");
+                        }
+                    },
+                    complete: function() {
+                        $("#confirm_btn").prop("disabled", false);  // 수정하기 버튼 활성화
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+	<!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/mypage :: mypageSidebar"></div>
+	<div class="content">
+		<h2>나의 정보 관리</h2>
+        <h3>계정 본인 확인을 위해 비밀번호를 입력해주세요.</h3>
+        <div class="confirm-area">
+            <input type="password" id="pwdInput" name="password_confirm" placeholder="비밀번호를 입력해주세요."><br>
+            <button type="button" id="confirm_btn" class="btn_submit">확인</button>
+        </div>
+        <span id="confirmError" class="error"></span>
+	</div>
+</div>

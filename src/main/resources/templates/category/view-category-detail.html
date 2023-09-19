@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	layout:decorate="~{layout/adminLayout}">
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+	<link rel="stylesheet" th:href="@{/css/category.css}">
+	<style>
+		/* 비활성화된 Input 요소 스타일링 */
+		input[disabled] {
+			width: 100%; /* 가로 100%로 설정 */
+			padding: 5px;
+			font-size: 16px; /* 원하는 글꼴 크기로 조정 */
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			outline: none;
+		}
+		
+		/* Input & Select Styles */
+		input[type="text"], input[type="number"], select {
+			padding: 5px;
+			font-size: 12px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			outline: none;
+			transition: border-color 0.2s ease-in-out;
+		}
+		
+		input[type="text"]:focus, input[type="number"]:focus, select:focus {
+			border-color: #007bff; /* 원하는 포커스 색상으로 변경하세요 */
+		}
+		
+		/* Form Element Styles */
+		form {
+			display: inline-block; /* form 요소를 인라인 블록으로 설정하여 옆으로 붙임 */
+			margin-right: 10px; /* form 요소 사이의 간격을 조정 (원하는 간격으로 조정) */
+		}
+	</style>
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</th:block>
+
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/category :: categorySidebar"></div>
+	<div class="content">
+		<h2>카테고리 관리</h2>
+		<h3>카테고리 정보 보기</h3>
+
+		<!-- 카테고리 정보 표시 -->
+		<div>
+			<div>
+		        <label for="categoryNum">카테고리 번호: </label>
+		        <input type="text" id="categoryNum" th:value="${selectedcategory.category_num}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="parentCategoryNum">부모 카테고리 번호: </label>
+		        <input type="text" id="parentCategoryNum" th:value="${selectedcategory.parent_category_num}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="categoryName">카테고리명: </label>
+		        <input type="text" id="categoryName" th:value="${selectedcategory.name}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="readPermission">읽기 권한: </label>
+		        <input type="text" id="readPermission" th:value="${selectedcategory.read_permission}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="writePermission">쓰기 권한: </label>
+		        <input type="text" id="writePermission" th:value="${selectedcategory.write_permission}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="createdUserNum">등록 유저 번호: </label>
+		        <input type="text" id="createdUserNum" th:value="${selectedcategory.created_user_num}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="createdAt">등록일: </label>
+		        <input type="text" id="createdAt" th:value="${selectedcategory.created_at}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="updatedUserNum">수정 유저 번호: </label>
+		        <input type="text" id="updatedUserNum" th:value="${selectedcategory.updated_user_num}" readonly  style="width: 100%;">
+		    </div>
+		
+		    <div>
+		        <label for="updatedAt">수정일: </label>
+		        <input type="text" id="updatedAt" th:value="${selectedcategory.updated_at}" readonly  style="width: 100%;">
+		    </div>
+		</div>
+
+		<div id="register-btn-area" style="margin-bottom: 10px;">
+			<br/>
+			<!-- 돌아가기 버튼 -->
+			<button id="pet-modal-register-btn" onclick="goBack()" class="btn btn-primary">돌아가기</button>
+			<script>
+				function goBack() {
+				  window.history.back();
+				}
+			</script>
+	
+			<!-- 수정 버튼 -->
+			<form th:action="@{/category/edit-category-form.do}" method="get">
+				<input type="hidden" name="categoryNum"
+					th:value="${selectedcategory.category_num}" />
+				<button id="pet-modal-register-btn" type="submit">수정</button>
+			</form>
+			
+			<!-- 삭제 버튼 -->
+			<form th:action="@{/category/do-delete-category.do}" method="get">
+				<!-- 카테고리 번호 (삭제 대상 카테고리) -->
+				<input type="hidden" name="category_num" th:value="${selectedcategory.category_num}" />
+				
+				<!-- 삭제 유저 번호 입력 -->
+				<input type="hidden" name="deleted_user_num" th:value="${#authentication.principal.usernum}">
+	
+				<button id="pet-modal-register-btn" type="submit" onclick="return confirm('삭제하시겠습니까?')">삭제</button>
+			</form>
+		</div>
+	</div>
+</div>

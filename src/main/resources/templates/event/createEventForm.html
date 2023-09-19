@@ -1,0 +1,81 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+<!-- 페이지의 제목 설정 -->
+<head>
+    <title>일정 등록</title>
+</head>
+<body>
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <!--    <link rel="stylesheet" th:href="@{/css/page/home.css}" >-->
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!--    <script th:src="@{/js/page/home.js}"></script>-->
+</th:block>
+
+ 
+<!-- Content -->
+<div layout:fragment="content" class="container">
+    <!-- sidebar fragment 사용 -->
+    <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+    <div class="content">일정 등록</div>
+<div class="form-container"> 
+    <form th:action="@{/event/createEvent}" th:object="${event}" method="post">
+        <div class="form-group">
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" th:field="*{title}" required>
+        </div>
+ 
+        <div class="form-group">
+            <label for="started_at">시작일/종료일</label> 
+            <div class="date-range">
+                <input type="text" id="started_at" name="started_at"  th:field="*{started_at}"  required>
+                <span>~</span>
+                <input type="text" id="ended_at" name="ended_at"  th:field="*{ended_at}"  required>
+            </div>
+            <div id="dateError" style="color: red;"></div> <!-- 경고 메시지를 표시할 요소 -->
+        </div>  
+
+        <div class="form-group">
+            <label for="location">장소</label> 
+            <input type="text" id="location" name="location" th:field="*{location}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="content">내용</label>
+            <input type="text" id="content" name="content" th:field="*{content}" required>
+        </div>
+
+        <button type="submit">등록</button>
+    </form>
+</div> 
+ <script>
+    var startedAtElement = document.getElementById("started_at");
+    var endedAtElement = document.getElementById("ended_at");
+    var dateErrorElement = document.getElementById("dateError"); // 경고 메시지를 표시할 요소
+
+    var submitButton = document.querySelector("button[type=submit]");
+
+    startedAtElement.addEventListener("change", validateDateRange);
+    endedAtElement.addEventListener("change", validateDateRange);
+
+    function validateDateRange() {
+        var startedAt = new Date(startedAtElement.value);
+        var endedAt = new Date(endedAtElement.value);
+
+        if (startedAt >= endedAt) {
+            dateErrorElement.textContent = "시작일은 종료일보다 이전이어야 합니다.";
+            submitButton.disabled = true; // 등록 버튼 비활성화
+        } else {
+            dateErrorElement.textContent = "";
+            submitButton.disabled = false; // 등록 버튼 활성화
+        }
+    }
+</script> 
+</div> 
+
+</body> 
+</html>

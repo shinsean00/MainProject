@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/defaultLayout}">
+      
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <style>
+        .content > div {
+            width: 400px;
+            font-size: 16px;
+        }
+        .content div {
+            padding: 5px 0 5px;
+        }
+        #datetime-area {
+            display: flex;
+        }
+        #allday-area, #datetime-area {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        #allday-area {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .allday-toggle {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .allday-toggle input {
+            display: none;
+        }
+        .allday-toggle label {
+            display: block;
+            width: 48px;
+            height: 24px;
+            text-indent: -250%;
+            user-select: none;
+        }
+        .allday-toggle label::before,
+        .allday-toggle label::after {
+            content: "";
+            display: block;
+            position: absolute;
+            cursor: pointer;
+        }
+        .allday-toggle label::before {
+            width: 100%;
+            height: 85%;
+            background-color: #dedede;
+            border-radius: 1em;
+            transition: background-color 0.25s ease;
+            top: 2px;
+            bottom: 2px;
+        }
+        .allday-toggle label::after {
+            top: 4px;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.45);
+            transition: left 0.25s ease;
+        }
+        .allday-toggle input:checked + label::before {
+            background-color: #87DAD1;
+        }
+        .allday-toggle input:checked + label::after {
+            left: 24px;
+        }
+        .event-form-wrapper {
+            display: flex;
+            flex-direction: column; 
+            background-color: #D7F3F0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .event-form-wrapper > div:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 5px;
+        }
+        .content input[type="text"], input[type="date"], input[type="time"] {
+            background-color: #D7F3F0;
+        }
+        input[type="text"] {
+            font-size: 16px;
+            width: 370px;
+            border: none;
+            outline: none;
+            padding: 8px;
+        }
+        input[type="date"], input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            width: 100%;
+            box-sizing: border-box; /* ensures padding and border are included in width */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="date"]:focus, input[type="time"]:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 5px rgba(20, 184, 166, 0.5); /* a light cyan focus glow */
+        }
+        #start_date, #end_date {
+            margin-top: 3px;
+        }
+        #time-inputs {
+            padding-top: 32px;
+            padding-left: 12px;
+            display: block;
+        }
+        #time-inputs div:nth-child(2) {
+            padding-top: 31px;
+        }
+        #start_time, #end_time {
+            height: 36px;
+        }
+        .update-btn-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #event-update-btn, #event-delete-btn {
+            font-size: 16px;
+            width: 190px;
+        }
+        #updateError {
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</th:block>
+
+<!-- 해당 페이지 고유 JS 추가 -->
+<th:block layout:fragment="script">
+    <script th:src="@{/js/mypage.js}"></script>
+    <script>
+        // 일정 등록 하루종일 checkbox 함수
+        function toggleTimeInput(show) {
+            const timeInputs = document.getElementById('time-inputs');
+            if (show) {
+                timeInputs.style.display = "block";
+            } else {
+                timeInputs.style.display = "none";
+            }
+        }
+
+        $(document).ready(function() {
+            toggleTimeInput(!$('#allday').prop('checked'));
+            // 수정 버튼 로직
+            $('#event-update-btn').click(function() {
+                $('#event-edit-form input').removeAttr('readonly');
+                $('#event-edit-form input[type="checkbox"]').removeAttr('disabled');
+                $('#update-actions').hide();
+                $('#complete-action').show();
+            });
+
+            // 삭제 버튼 클릭 이벤트
+            $('#event-delete-btn').click(function() {
+                const eventNum = $('#event-edit-form').data('event-num');
+                const eventTitle = $('#title').val();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/event/api/delete-event",
+                    data: { event_num: eventNum },
+                    contentType: "application/json",
+                    success: function(response) {
+                        alert(eventTitle + " 일정이 삭제되었습니다.");
+                        window.location.href = "/event/listEvents.do";
+                    },
+                    error: function(xhr, status, error) {
+                        alert(eventTitle + " 일정을 삭제하는데 실패하였습니다.");
+                    }
+                });
+            });
+
+            // 일정 수정 완료 버튼 로직
+            $('#event-update-complete-btn').on('click', function() {
+                const errorElement = $('#updateError');
+                const eventNum = $('#event-edit-form').data('event-num');
+
+                // 유효성 검사
+                let title = $('#title').val();
+                let startDate = $('#start_date').val();
+                let endDate = $('#end_date').val();
+                let startTime = $('#start_time').val();
+                let endTime = $('#end_time').val();
+                let allDayChecked = $('#allday').prop('checked');
+
+                if (!title) {
+                    errorElement.text("제목을 입력해주세요.");
+                    return;
+                }
+                if (!startDate) {
+                    errorElement.text("시작일을 선택해주세요.");
+                    return;
+                }
+                if (!endDate) {
+                    errorElement.text("종료일을 선택해주세요.");
+                    return;
+                }
+                if (!allDayChecked && (!startTime || !endTime)) {
+                    errorElement.text("시작 시간과 종료 시간을 입력해주세요.");
+                    return;
+                }
+                // ended_at이 started_at보다 빠른지 확인하는 유효성 검사
+                let started_at_timestamp = new Date(startDate + (allDayChecked ? '' : ' ' + startTime)).getTime();
+                let ended_at_timestamp = new Date(endDate + (allDayChecked ? '' : ' ' + endTime)).getTime();
+
+                if (ended_at_timestamp < started_at_timestamp) {
+                    errorElement.text("종료일이 시작일보다 빠를 수 없습니다.");
+                    return;
+                }
+
+                // 유효성 검사를 통과하면 AJAX 요청
+                let formData = {
+                    event_num: eventNum,
+                    title: title,
+                    allday: allDayChecked,
+                    started_at: startDate + (allDayChecked ? '' : 'T' + startTime + ":00.000Z"),
+                    ended_at: endDate + (allDayChecked ? '' : 'T' + endTime + ":00.000Z"),
+                    location: $('#location').val(),
+                    content: $('#content').val(),
+                    url: $('#url').val()
+                };
+                console.log(formData);
+
+                $(this).prop("disabled", true);
+                $.ajax({
+                    url: "/event/api/update-event",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        alert("일정 수정이 완료되었습니다.");
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        errorElement.text('일정 수정 중 오류가 발생했습니다.');
+                        if (xhr.responseText) {
+                            errorMessage += " (" + xhr.responseText + ")";
+                        }
+                        errorElement.text(errorMessage);
+                    },
+                    complete: function() {
+                        $("#update-btn-area").prop("disabled", false);
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+
+<head>
+    <meta charset="UTF-8">
+    <title>일정 수정</title>
+</head>  
+
+<body>
+    <div layout:fragment="content" class="container">
+        <div th:replace="sidebar/mypage :: mypageSidebar"></div>
+        <div class="content">
+            <h2>일정 상세보기</h2>
+            <div>
+                <form id="event-edit-form" th:data-event-num="${event.event_num}">
+                    <div class="event-form-wrapper">
+                        <div>
+                            <input type="text" id="title" name="title" placeholder="제목" th:value="${event.title}">
+                        </div>
+                    </div>
+                    <div class="event-form-wrapper"> 
+                        <div id="allday-area">
+                            <label for="allday">하루종일 </label>
+                            <div class="allday-toggle">
+                                <input type="checkbox" id="allday" name="allday" onclick="toggleTimeInput(!this.checked)" th:checked="${event.allday}" disabled>
+                                <label for="allday"></label>
+                            </div>
+                        </div>
+                        <div id="datetime-area">
+                            <div id="date-inputs">
+                                <div>
+                                    <label for="start_date">시작</label>
+                                    <input type="date" id="start_date" name="start_date" th:value="${#dates.format(event.started_at, 'yyyy-MM-dd')}" readonly>
+                                </div>
+                                <div>
+                                    <label for="end_date">종료</label>
+                                    <input type="date" id="end_date" name="end_date" th:value="${#dates.format(event.ended_at, 'yyyy-MM-dd')}" readonly>
+                                </div>
+                            </div>
+                            <div id="time-inputs">
+                                <div>
+                                    <label for="start_time"></label>
+                                    <input type="time" id="start_time" name="start_time" th:value="${#dates.format(event.started_at, 'HH:mm')}" readonly>
+                                </div>
+                                <div>
+                                    <label for="end_time"></label>
+                                    <input type="time" id="end_time" name="end_time" th:value="${#dates.format(event.ended_at, 'HH:mm')}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-form-wrapper"> 
+                        <div>
+                            <input type="text" id="location" name="location" placeholder="장소" th:value="${event.location}" readonly>
+                        </div>
+                        <div>
+                            <input type="text" id="content" name="content" placeholder="내용" th:value="${event.content}" readonly>
+                        </div>
+                        <div>
+                            <input type="text" id="url" name="url" placeholder="URL" th:value="${event.url}" readonly>
+                        </div>
+                    </div>
+                    <div class="update-btn-area" id="update-actions">
+                        <button type="button" id="event-update-btn" class="event-update-btn">일정 수정하기</button>
+                        <button type="button" id="event-delete-btn" class="event-update-btn">일정 삭제하기</button>
+                    </div>
+                    <div class="update-btn-area" id="complete-action" style="display: none;">
+                        <span id="updateError" class="error"></span>
+                        <button type="button" id="event-update-complete-btn" class="event-update-btn">일정 수정 완료</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

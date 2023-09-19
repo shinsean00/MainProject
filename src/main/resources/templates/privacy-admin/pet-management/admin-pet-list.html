@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+
+<head>
+	<title>관리자 반려친구 리스트</title>
+</head>
+
+<th:block layout:fragment="css">
+	<link rel="stylesheet" th:href="@{/css/pet-management.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin.css}"/>
+	<style>
+		#search-btn {
+			background: linear-gradient(to right, #14A6B8, #43B8C6);
+			height: 39px;
+			color: #fff;
+			padding: 3px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background 0.3s, transform 0.3s;
+			box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+		}
+		#search-btn:hover {
+			background: linear-gradient(to right, #108593, #14A6B8);
+			transform: translateY(-2px);
+		}
+		#search-btn:active{
+			transform: translateY(0);
+		}
+	</style>
+</th:block>
+
+<th:block layout:fragment="script">
+	<script th:src="@{/js/pet/pet-list.js}"></script>
+</th:block>
+
+<div layout:fragment="content" class="container">
+	<!-- sidebar fragment 사용 -->
+	<div th:replace="sidebar/privacy-admin :: petManagementSidebar"></div>
+	<div class="content">
+		<div class="h2-wrapper">
+			<h2>반려친구 정보 관리</h2>
+			<form th:action="@{/privacy-admin/pet-management/search}" method="get" class="search-form">
+				<select name="category">
+					<option value="name">이름</option>
+					<option value="owner_name">반려인</option>
+				</select>
+				<input type="text" name="keyword" placeholder="검색어를 입력해주세요.">
+				<button type="submit" id="search-btn">검색</button>
+			</form>
+		</div>
+		<table>
+			<div class="table-top-wrapper"> </div>
+			<thead>
+				<tr>
+					<th>이름 <button type="button" class="sort_btn"></button></th>
+					<th>반려인 아이디<button type="button" class="sort_btn"></button></th>
+					<th>생일 <button type="button" class="sort_btn"></button></th>
+					<th>입양일 <button type="button" class="sort_btn"></button></th>
+					<th>나이 <button type="button" class="sort_btn"></button></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="pet: ${petList}"
+					th:onclick="'window.location.href=\'/privacy-admin/pet-management/admin-pet-info/' + ${pet.pet_no} + '.do\''">
+					<td th:text="${pet.name}"></td>
+					<td th:text="${pet.owner_name}"></td>
+					<!-- '생일' 날짜 서식 적용 -->
+					<td th:text="${#dates.format(pet.birth, 'yyyy-MM-dd')}"></td>
+					<!-- '입양일' 날짜 서식 적용 -->
+					<td th:text="${#dates.format(pet.adopted_at, 'yyyy-MM-dd')}"></td>
+					<!-- 나이 출력: JavaScript로 계산한 나이를 출력하기 위한 빈 엘리먼트 -->
+					<td class="age" th:data-birth="${#dates.format(pet.birth, 'yyyy-MM-dd')}"></td>
+				</tr>
+			</tbody>
+
+		</table>
+	</div>
+</div>

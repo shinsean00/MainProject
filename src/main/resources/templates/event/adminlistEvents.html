@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}"> 
+     
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/event.css}">  
+    <link rel="stylesheet" th:href="@{/css/pet-management.css}" /> 
+    <link rel="stylesheet" th:href="@{/css/admin.css}"/>
+</th:block>
+
+<th:block layout:fragment="script">
+     
+</th:block>  
+       
+<head> 
+    <meta charset="UTF-8">
+    <title>일정 관리</title>       
+</head>   
+
+<div layout:fragment="content" class="container">
+    <div th:replace="sidebar/privacy-admin :: eventManagementSidebar"></div>
+    <div class="content">
+        <div class="h2-wrapper"><h2>일정 관리</h2></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>제목</th>
+                    <th>장소</th>
+                    <th>작성자</th>
+                    <th>종료일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="event : ${allEvents}">
+                    <td><a th:href="@{/event/adminviewEvent(eventTitle=${event.title})}" th:text="${event.title}">일정 보기</a></td>
+                    <td th:text="${event.location}"></td>
+                    <td th:text="${event.event_user_name}"></td>
+                    <td th:text="${#dates.format(event.ended_at, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <a class="button" th:href="@{/event/admincreateEventForm}">일정 등록</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</html>

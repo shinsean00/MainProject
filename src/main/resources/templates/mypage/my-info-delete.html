@@ -1,0 +1,211 @@
+<!-- 페이지의 제목 설정 -->
+	<title>계정 탈퇴</title>
+
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+	<link rel="stylesheet" th:href="@{/css/mypage.css}">
+	<style>
+		.content {
+			width: 815px;
+			margin: 7.5px;
+		}
+		.content > h2 {
+			border-bottom: 1px solid #B81426;
+		}
+		#withdrawalReason-title {
+			display: flex;
+			flex-direction: row;
+		}
+		#withdrawalError {
+			margin-left: 5px;
+			font-size: 13px;
+			font-weight: 600;
+		}
+		.delete-h3 {
+			color: #B81426 !important;
+			padding-bottom: 3px !important;
+			margin: 0 !important;
+		}
+		p {
+			margin: 0 0 10px;
+			font-weight: 600;
+			font-size: 15px;
+		}
+		#withdrawal_btn {
+            background: linear-gradient(to right, #B81426, #c64351);
+            width: 340px;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        #withdrawal_btn:hover {
+            background: linear-gradient(to right, #93101e, #B81426);
+            transform: translateY(-2px);
+        }
+        #withdrawal_btn:active {
+            transform: translateY(0);
+        }
+
+		input[type="radio"] {
+			display: none;
+		}
+
+		label {
+			display: inline-block;
+			border: 1px solid #B81426;
+			padding: 5px 15px;
+			border-radius: 5px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+			cursor: pointer;
+			transition: background 0.3s;
+			width: 130px;
+			text-align: center;
+		}
+
+		input[type="radio"]:checked + label {
+			background-color: #B81426;
+			color: white;
+		}
+
+		#otherReasons {
+			display: block;
+			width: 317px;
+			padding: 10px;
+			margin-bottom: 20px;
+			border: 1px solid #E0E0E0;
+			border-radius: 5px;
+			resize: vertical;
+		}
+
+		#otherReasons:focus {
+			border-color: #B81426;
+			outline-style: solid;
+			outline-width: 1px;
+			outline-color: #B81426;
+			box-shadow: 0 0 5px rgba(184, 20, 38, 0.5);
+		}
+	</style>
+</th:block>
+
+	<div class="content">
+		<h2>계정 탈퇴</h2>
+		<h3 class="delete-h3">탈퇴 전 안내사항</h3>
+		<p>🚫 계정 탈퇴 시 모든 정보가 삭제됩니다. 이는 되돌릴 수 없으므로 주의해 주세요. 🚫</p>
+		<form id="withdrawal_form">
+			<div id="withdrawalReason-title"><h3 class="delete-h3">탈퇴 사유 선택</h3> <div id="withdrawalError" class="error"></div></div>
+			 <input type="radio" name="withdrawalReason" id="reason1" value="사이트 사용의 어려움"><label for="reason1">사이트 사용의 어려움</label>
+			 <input type="radio" name="withdrawalReason" id="reason2" value="내용과 서비스 불만족"><label for="reason2">내용과 서비스 불만족</label><br>
+			 <input type="radio" name="withdrawalReason" id="reason3" value="개인정보 및 보안 우려"><label for="reason3">개인정보 및 보안 우려</label>
+			 <input type="radio" name="withdrawalReason" id="reason4" value="중복 가입 및 계정 문제"><label for="reason4">중복 가입 및 계정 문제</label><br>
+			 <input type="radio" name="withdrawalReason" id="reason5" value="사이트의 변경된 방향성"><label for="reason5">사이트의 변경된 방향성</label>
+			 <input type="radio" name="withdrawalReason" id="reason6" value="다른 사이트나 앱 이용"><label for="reason6">다른 사이트나 앱 이용</label><br>
+			 <input type="radio" name="withdrawalReason" id="reason7" value="이용하지 않는 서비스"><label for="reason7">이용하지 않는 서비스</label>
+			 <input type="radio" name="withdrawalReason" id="radioOtherReasons" value="기타 사유"><label for="radioOtherReasons">기타 사유</label><br>
+			<textarea id="otherReasons" name="otherReasons" rows="4" cols="50" placeholder="기타 탈퇴 사유를 작성해주세요." style="display: none;"></textarea><br>
+			<button type="button" id="withdrawal_btn" class="btn_submit">계정 탈퇴하기</button>
+		</form>
+	</div>
+	
+<script th:inline="javascript">
+	var userData = /*[[${user}]]*/ {};
+</script>
+<script>
+	$(document).ready(function() {
+		// console.log(userData); // 사용자 전체 정보 확인
+		// 사용자 정보
+		var userNum = userData.user_num;
+		var userId = userData.id;
+	    
+		// 기타 사유 라디오 버튼 클릭시 textarea 표시
+		$("input[name='withdrawalReason']").change(function() {
+		    if ($("#radioOtherReasons").is(":checked")) {
+		        $("#otherReasons").slideDown();
+		    } else {
+		        $("#otherReasons").slideUp();
+		    }
+		});
+		
+		// 탈퇴하기 기능
+		$("#withdrawal_btn").click(function() {
+			// 유효성 검사
+			// 라디오 버튼 선택 확인
+	        if (!$("input[name='withdrawalReason']:checked").val()) {
+	            $("#withdrawalError").text("탈퇴 사유를 선택해주세요.");
+	            return;
+	        }
+
+	        // 기타 사유 라디오 버튼이 선택되었는지 확인
+	        if ($("#radioOtherReasons").is(":checked")) {
+	            // textarea에 글자가 입력되었는지 확인
+	            if ($("#otherReasons").val().trim() === "") {
+	                $("#withdrawalError").text("기타 탈퇴 사유를 작성해주세요.");
+	                return;
+	            }
+	        } else {
+	            $("#withdrawalError").text(""); // 기타 사유가 아닌 다른 라디오 버튼이 선택되면 에러 메시지 초기화
+	        }
+	        
+	    	// 현재 날짜와 시간을 timestamp로 입력하는 로직
+	        var date = new Date();
+	        date.setHours(date.getHours() + 9); // 한국은 UTC로부터 +9시간이므로 9를 더함
+	        var timestamp = date.toISOString();
+	        var deleted_at = timestamp;
+		    
+	        // 탈퇴 사유
+	        var selectedReason = document.querySelector('input[name="withdrawalReason"]:checked').value;
+	        if (document.getElementById("radioOtherReasons").checked) {
+	            selectedReason = document.getElementById("otherReasons").value;
+	        }
+	        
+	        // 전송할 데이터
+		    var formData = {
+		    		user_num: userNum,
+		    		id: userId,
+		    		is_deleted: true,
+		    		deleted_user_num: userNum,
+		    		deleted_at: deleted_at,
+		    		deleted_reason: selectedReason
+		    		
+		    };
+		    // console.log(formData); // formData 확인
+	        
+			var isConfirmed = confirm("정말 탈퇴하시겠습니까?");
+			if (isConfirmed) {		        
+				// 탈퇴 로직
+				$(this).prop("disabled", true);
+				$.ajax({
+					url: "/api/delete-user",
+					type: "POST",
+					contentType: "application/json",
+	                data: JSON.stringify(formData),
+	                success: function(response) {
+	                    alert("계정 탈퇴가 완료되었습니다.");
+	                    $.ajax({ // 로그아웃 요청 
+	                        url: "/api/logout",
+	                        type: "GET",
+	                        success: function() {
+	                            window.location.href = "/index.do"
+	                        },
+	                        error: function(xhr, status, error) {
+	                            alert("로그아웃 중 오류가 발생했습니다.");
+	                            window.location.href = "/index.do";
+	                        }
+	                    });
+	                },
+	                error: function(xhr, status, error) {
+	                    alert("계정 탈퇴 중 오류가 발생했습니다.");
+	                },
+	                complete: function() {
+	                  $("#withdrawal_btn").prop("disabled", false);  // 계정 탈퇴 버튼 활성화
+	                }
+	            });
+			}
+		});
+	});
+</script>

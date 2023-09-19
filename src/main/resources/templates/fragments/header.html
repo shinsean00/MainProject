@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+				xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+</head>
+<!--headerFragment 선언-->
+<body>
+	<div th:fragment="headerFragment">
+		<header>
+			<!-- 로고 영역 -->
+	    	<h1 class="logo-area">
+	    		<a href="/index.do" class="link"><img class="logo-main" src="/img/aniplant_logo_animation.gif"></a>
+	    		<a href="" class="link"><img class="logo-sub"src=""></a>
+	  		</h1>
+			<!-- 검색창 영역 -->
+			<div class="search-area">
+				<form id="search_form" name="search_form" method="get" action="">
+					<input type="text" name="search_input" placeholder="통합 검색" autocomplete="off">
+					<button type="button" id="search_btn" class="btn_submit"></button>
+				</form>
+				<div id="recent_searches">
+				</div>
+			</div>
+			<!-- 사용자 계정 영역 -->
+			<div class="user-area" th:classappend="${!isLoggedIn} ? 'not-logged-in' : ''">
+				<!--로그인 및 회원가입-->
+				<button type="button" id="loginLink_btn" class="user_btn" th:if="${!isLoggedIn}"><img src="/img/login.png">  로그인</button>
+				<button type="button" id="joinLink_btn" class="user_btn" th:if="${!isLoggedIn}"><img src="/img/join.png">회원가입</button>
+				<!--로그아웃 버튼-->
+				<div class="profile-group" th:if="${isLoggedIn}">
+					<img id="profile-img" th:src="${#authentication.principal.profile_picture}">
+					<div class="user-group">
+						<img id="rank-img" th:src="${#authentication.principal.rank.imagePath}">
+						<p id="login-nickname" th:text="${#authentication.principal.nickname} + 님">Nickname님</p>
+					</div>
+				</div>
+				<div class="btn-group" th:if="${isLoggedIn}">
+					<button type="button" id="mypageLink_btn" class="user_btn"><img src="/img/user.png">마이페이지</button>
+					<button type="button" id="logoutLink_btn" class="user_btn"><img src="/img/logout.png">로그아웃</button>
+				</div>
+			</div>
+	  	</header>
+		<div id="search-modal">
+			<div id="search-modal-content">
+				<div class="ping"></div><div id="search-modal-text">검색중입니다. 잠시만 기다려주세요.</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

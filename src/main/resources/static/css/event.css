@@ -1,0 +1,213 @@
+ 
+ 
+  h2 {
+    display: inline-block; /* 요소를 인라인 블록으로 표시 */
+    white-space: nowrap; /* 텍스트 줄 바꿈 금지 */
+    max-width: 100%; /* 요소의 최대 너비 설정 */
+    
+    	 
+}  
+ 
+
+ 
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;  
+  table-layout: fixed; 
+}
+
+
+ 
+td {
+  padding: 6px 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th { 
+  background: #14a6b8;
+  color: #fff;
+  text-align: center;
+  padding: 6px;
+}
+
+/* Table Styles */
+tr:first-child th:first-child {
+  border-top-left-radius: 10px; 
+}
+
+tr:first-child th:last-child {
+  border-top-right-radius: 6px;
+}
+
+td {
+  border-right: 1px solid #c6c9cc;
+  border-bottom: 1px solid #c6c9cc;
+}
+
+td:first-child {
+  border-left: 1px solid #c6c9cc;
+}
+
+tr:not(.detail-content-row):nth-child(even) td {
+  background: #dff3f5;
+}
+
+tr:last-child td:first-child {
+  border-bottom-left-radius: 6px;
+}
+
+tr:last-child td:last-child {
+  border-bottom-right-radius: 6px;
+}
+
+tbody tr:not(.detail-content-row):hover {
+  background-color: rgba(20, 166, 184, 0.2);
+}
+
+tbody tr:not(.detail-content-row):nth-child(even):hover td {
+  background-color: rgba(20, 166, 184, 0.2);
+}
+
+tbody tr.detail-content-row:hover td {
+  background-color: #fff !important;
+}
+   
+        
+    
+/* Table Top Wrapper */
+.table-top-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 7px 0;
+}
+
+.table-top-wrapper > span {
+  font-size: 16px;
+  font-weight: bold;
+  color: #14a6b8;
+  vertical-align: middle;
+}
+
+/* Pagination Styles */
+.paging-area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+#displayRange {
+  font-style: italic;
+  color: #43b8c6;
+}
+
+#previousPageButton, #nextPageButton {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: #fff;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+#previousPageButton {
+  background-image: url("/img/previous-btn.png");
+}
+
+#nextPageButton {
+  background-image: url("/img/next-btn.png");
+} 
+
+/* Pagination Styles */
+.paging-area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+#displayRange {
+  font-style: italic;
+  color: #43b8c6;
+}
+
+#previousPageButton, #nextPageButton {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: #fff;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+#previousPageButton {
+  background-image: url("/img/previous-btn.png");
+}
+
+#nextPageButton {
+  background-image: url("/img/next-btn.png");
+}
+
+/* Input & Select Styles */
+#itemsPerPageSelect, .table-search-area > input {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 1px solid #c6c9cc;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+#itemsPerPageSelect {
+  background-color: #fff;
+  appearance: none;
+}
+
+.table-search-area > input {
+  transition: border-color 0.2s;
+}
+
+.table-search-area > input:focus {
+  border-color: #14a6b8;
+}
+
+/* Pagination Number Container */
+#pageNumberContainer {
+  display: inline-block;
+  width: 180px;
+  text-align: center;
+}
+
+.page-link, .current-page {
+  display: inline-block;
+  width: 30px;
+  margin: 0 2px;
+  text-align: center;
+} 
+
+.button-area button {
+    background-color: #14a6b8;
+    font-size: 15px;
+    color: #ffffff;
+    width: 80px;
+    height: 30px;
+    padding: 6px;
+    margin: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}   
+     

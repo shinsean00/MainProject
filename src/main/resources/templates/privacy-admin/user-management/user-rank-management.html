@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/adminLayout}">
+
+<head>
+    <!-- 페이지의 제목 설정 -->
+    <title>회원 등급 관리</title>
+
+    <!-- 해당 페이지 고유 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/user-management.css}"/>
+    </th:block>
+
+    <!-- 해당 페이지 고유 스크립트 추가 -->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            window.users = /*[[${users}]]*/ [];
+        </script>
+        <script th:src="@{/js/user-management.js}"></script>
+        <script>
+            $(document).ready(function() {
+                // 등급 승격 버튼 로직
+                $('body').off('click', '.rank_up_btn').on('click', '.rank_up_btn', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 중단
+                    const clickedButton = $(this);
+                    const clickedRow = clickedButton.closest('tr.user-row');
+                    const userNum = clickedRow.find('td:first').text().trim();
+                    const rank = clickedRow.find('td:nth-child(5)').text().trim();
+                    const nickname = clickedRow.find('td:nth-child(4)').text().trim();
+        
+                    // AJAX로 서버에 등급 승격 요청을 보냄
+                    $.ajax({
+                        url: "/api/rank-up",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ 
+                            userNum: userNum,
+                            rank: rank
+                        }),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert(nickname + response.message);
+                                location.reload();
+                            } else {
+                                alert(nickname + response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert("등급 승격 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                        }
+                    });
+                });
+        
+                // 권한 전환 버튼 로직
+                $('body').off('click', '.rank_switch_btn').on('click', '.rank_switch_btn', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 중단
+                    const clickedButton = $(this);
+                    const clickedRow = clickedButton.closest('tr.user-row');
+                    const userNum = clickedRow.find('td:first').text().trim();
+                    const rank = clickedRow.find('td:nth-child(5)').text().trim();
+                    const nickname = clickedRow.find('td:nth-child(4)').text().trim();
+
+                    $.ajax({
+                        url: "/api/rank-switch",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ 
+                            userNum: userNum,
+                            rank: rank
+                        }),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert(nickname + response.message); // ~님의 권한이 관리자(사용자)로 전환되었습니다.
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert("권한 전환 중 오류가 발생했습니다. 상태: " + status + ", 응답: " + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        </script>
+    </th:block>
+</head>
+
+<body data-page-type="userRankManagement">
+    <!-- Content -->
+    <div layout:fragment="content" class="container">
+        <!-- sidebar fragment 사용 -->
+        <div th:replace="sidebar/privacy-admin :: userManagementSidebar"></div>
+        <div class="content">
+            <h2>회원 등급 관리</h2>
+            <table>
+                <div class="table-top-wrapper">
+                    <select id="itemsPerPageSelect">
+                        <option value="10">10개로 보기</option>
+                        <option value="25">25개로 보기</option>
+                        <option value="50">50개로 보기</option>
+                        <option value="100">100개로 보기</option>
+                    </select>
+                    <span>회원 등급 리스트</span>
+                    <div class="table-search-area">
+                        검색 : <input>
+                    </div>
+                </div>
+                <thead>
+                    <tr>
+                        <th>회원 번호 <button type="button" class="sort_btn"></button></th>
+                        <th>아이디 <button type="button" class="sort_btn"></button></th>
+                        <th>이름 <button type="button" class="sort_btn"></button></th>
+                        <th>닉네임 <button type="button" class="sort_btn"></button></th>
+                        <th>회원 등급 <button type="button" class="sort_btn"></button></th>
+                        <th>생년월일 <button type="button" class="sort_btn"></button></th>
+                        <th>등급 관리</th>
+                        <th>권한 설정</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.user_num}"></td>
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.name}"></td>
+                        <td th:text="${user.nickname}"></td>
+                        <td th:text="${user.rank}"></td>
+                        <td th:text="${#dates.format(user.birth, 'yyyy-MM-dd')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="paging-area">
+                <div id="displayRange">
+                    <span id="">총 <b><span id="usersLength" th:text="${users.size()}"></b></span>개 항목 중 <b><span id="startRange">1</span></b> ~ <b><span id="endRange">10</span></b>번 항목까지 표시 중입니다.</span>
+                </div>
+                <div class="pagination">
+                    <button id="previousPageButton"></button>
+                    <!-- <span>페이지 : <span id="currentPageDisplay"></span> / <span id="totalPagesDisplay"></span></span> -->
+                    <span id="pageNumberContainer"></span>
+                    <button id="nextPageButton"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

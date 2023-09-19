@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/defaultLayout}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+</head>
+<!-- 해당 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+  <style>
+		.container {
+            display: flex;
+            flex-direction: row; 
+            align-items: start;
+    }
+	</style>
+</th:block>
+<!-- 해당 페이지 고유 스크립트 추가 -->
+<th:block layout:fragment="script"> 
+	<script th:inline="javascript">
+    function checkLogin() {
+        /* 사용자 로그인 여부 확인 */
+        var isAuthenticated = /*[[${#authorization.expression('isAuthenticated()')}]]*/;
+
+        if (!isAuthenticated) {
+            alert("로그인 후 사용이 가능합니다.");
+        }
+    }
+</script>
+    <!--<script th:src="@{/js/page/home.js}"></script>-->
+</th:block>
+
+<body>
+    <!-- Content -->
+<div layout:fragment="content" class="container">
+  <!-- sidebar fragment 사용 -->
+  <div th:replace="sidebar/article :: articleSidebar"></div>
+  
+  <div class="content">
+    <select name="select" id="select">
+    <option value="제목" >제목</option>
+    <option value="등록자 아이디">등록자 아이디</option>
+    <option value="내용">내용</option>
+    <option value="제목/내용">제목/내용</option>
+    <option value="닉네임">닉네임</option>
+  </select>
+  <input type="text" name="searchInput" id="searchInput">
+  <button id="searchButton">검색</button>
+ 
+  
+
+ <div class="boradlist-container">
+ <a th:href="@{/board/articleForm.do}" onclick="checkLogin()">게시글 쓰기</a>	
+	 <h1 th:text="${category.name} + ' 게시판'"></h1> 
+   <!--  <h1>동물 게시판</h1> -->
+  
+      <table class="boradlist">
+
+         <tr>
+            <th><b>번호</b></th>
+            <th><b>제목</b></th>
+            <th><b>작성자</b></th>
+            <th><b>조회수</b></th>
+            <th><b>추천</b></th>
+            <th><b>비추천</b></th>
+            <th><b>작성일</b></th>
+         </tr>
+
+      <tr align="center" th:each="board : ${articlesList}">
+        <td th:text="${board.post_num}"></td>   
+        <td>
+        	<a class="cls1" th:href="@{/board/viewArticle.do(post_num=${board.post_num})}" th:text="${board.title}"></a>
+    	</td>
+        <td th:text="${board.created_user_num}"></td>
+        <td th:text="${board.views}"></td>
+        <td th:text="${board.good}"></td>
+        <td th:text="${board.bad}"></td>
+        <td th:text="${board.created_at}"></td>
+    </tr>
+      </table>
+
+    <!--  <div class="pagination">
+      <button id="prev">◀</button>
+      <div class="page-numbers">
+        <button class="page-number" th:each="pageNumber : ${pageNumbers}" th:text="${pageNumber}"></button>
+        
+      </div>
+      <button id="next">▶</button>
+    </div> -->
+    
+   </div>
+
+
+</div>
+
+</div>
+
+
+
+</body>
+</html>

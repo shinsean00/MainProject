@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   	
+<mapper namespace="mapper.event"> 
+  <resultMap id="eventResultMap" type="eventVO">
+        <result property="event_num" column="event_num"/>
+        <result property="title" column="title"/>
+        <result property="started_at" column="started_at"/>
+        <result property="ended_at" column="ended_at"/>
+        <result property="location" column="location"/>
+        <result property="content" column="content"/>
+        <result property="is_admin" column="is_admin"/>
+        <result property="created_user_num" column="created_user_num"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_user_num" column="updated_user_num"/>
+        <result property="updated_at" column="updated_at"/>
+        <result property="is_deleted" column="is_deleted"/>
+        <result property="deleted_user_num" column="deleted_user_num"/>
+        <result property="deleted_at" column="deleted_at"/>
+        <result property="event_order" column="event_order"/>
+        <result property="event_user_name" column="event_user_name"/>
+        <result property="allday" column="allday"/>
+ 		<result property="url" column="url"/>
+   </resultMap>
+         
+
+       
+	 <insert id="insertEvent" parameterType="com.mainproject.event.vo.EventVO">
+	    INSERT INTO TB_EVENT (title, started_at, ended_at, location, content, created_user_num, event_order, created_at, event_user_name, allday, url)
+	    VALUES (#{title}, #{started_at}, #{ended_at}, #{location}, #{content}, #{created_user_num}, #{event_order}, CURRENT_TIMESTAMP, #{event_user_name}, #{allday}, #{url})
+	</insert> 
+	 
+    <insert id="registerEvent" parameterType="eventVO">
+	    INSERT INTO TB_EVENT (title, started_at, ended_at, location, content, created_user_num, created_at, event_order, event_user_name, allday, url)
+	    VALUES (#{title}, #{started_at}, #{ended_at}, #{location}, #{content}, #{created_user_num}, #{created_at}, #{event_order}, #{event_user_name}, #{allday}, #{url})
+	</insert>
+	
+    <select id="selectEventsForUserNum" parameterType="int" resultType="com.mainproject.event.vo.EventVO">
+    SELECT * FROM TB_EVENT WHERE created_user_num = #{userNum} AND is_deleted = 0
+    
+    </select> 
+    
+    <select id="getEventByTitle" parameterType="String" resultType="com.mainproject.event.vo.EventVO">
+        SELECT * FROM TB_EVENT WHERE title = #{eventTitle} 
+    </select> 
+    
+    <select id="getEventById" parameterType="int" resultMap="eventResultMap">
+    SELECT * FROM TB_EVENT WHERE event_num = #{eventId} 
+    </select> 
+    
+    <update id="updateEvent" parameterType="com.mainproject.event.vo.EventVO">
+    UPDATE TB_EVENT
+    SET title = #{title},
+        started_at = #{started_at},
+        ended_at = #{ended_at},
+        location = #{location}, 
+        content = #{content},
+        is_deleted = #{is_deleted}, 
+        updated_at = CURRENT_TIMESTAMP  
+    WHERE event_num = #{event_num}  
+    </update>
+     
+    <select id="getEventByEventNum" parameterType="int" resultMap="eventResultMap">
+    SELECT * FROM TB_EVENT WHERE event_num = #{eventNum}  
+    </select> 
+    
+    <select id="getLastEventOrderForUser" parameterType="int" resultType="int">
+        SELECT MAX(event_order) FROM TB_EVENT WHERE created_user_num = #{userNum}
+    </select> 
+    
+   <select id="getAllEvents" resultType="com.mainproject.event.vo.EventVO">
+    SELECT * FROM TB_EVENT
+    WHERE Is_Deleted = 0
+</select> 
+  
+    <update id="deleteEvent2" parameterType="eventVO">
+	    UPDATE TB_EVENT
+	    SET deleted_user_num = #{deleted_user_num},
+	        deleted_at = #{deleted_at},
+	        is_deleted = #{is_deleted} 
+	    WHERE event_num = #{event_num}
+    </update>
+    
+    <update id="updateEvent2" parameterType="eventVO">
+	    UPDATE TB_EVENT
+	    SET title = #{title},
+	        started_at = #{started_at},
+	        ended_at = #{ended_at},
+	        location = #{location}, 
+	        content = #{content},
+	        updated_at = #{updated_at},
+	        updated_user_num = #{updated_user_num},
+	        allday = #{allday},
+	        url = #{url}
+	    WHERE event_num = #{event_num}  
+    </update>
+    
+  
+</mapper>   
+
+ 
